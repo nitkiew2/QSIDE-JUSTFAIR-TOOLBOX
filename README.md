@@ -1,4 +1,4 @@
-# CMSE495-QSIDE-JUSTFAIR
+# CMSE495-QSIDE-JUSTFAIR-TOOLBOX
 CMSE 495 is the Data Science Capstone course at Michigan State University, the team is working for QSIDE-JUSTFAIR 
 Mary Andrew, Alexis Morse, Jason Nitkiewicz, Kevin Su
 __________________________________________________________________________________________________________________
