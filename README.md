@@ -11,6 +11,8 @@ ________________________________________________________________________________
 1. Find social justice issues within the Judicial System by collecting case data across the United States.
 2. Examine further into the already known data if there are disproportionate BIPOC offenders to white offenders for the same    style of crime
 
+Video Description: https://drive.google.com/file/d/11tRrQ_5m83ux74n_uJeeIybmjLq1iAmv/view
+
 --------------------------------------------------------------------------------------------------
 
 ### Data:
