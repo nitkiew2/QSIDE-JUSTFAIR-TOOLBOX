@@ -32,3 +32,12 @@ https://qsideinstitute.org/research/criminal-justice/justfair/
   - Analyze variations from state-to-state between judicial districts.
   - Answer questions such as: How is the data organized? How do we make this data more efficient for future researchers?
   - May involve editing/creating website or cleaning publications of data sets/
+
+
+----------------------------------------------------------------------------------------------------
+
+
+### Installation:
+
+  - Software needed: GitHub, Python (Jupyter Notebook)
+  - installation instructions are in installation_requirements.txt
