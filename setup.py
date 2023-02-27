@@ -11,7 +11,7 @@ from distutils.core import setup
 setup(
     name='JUSTFAIR_Toolbox',
     version='0.1dev',
-    packages=['matplotlib.pyplot','pandas','numpy'],
+    packages=['JUSTFAIR_Toolbox','matplotlib.pyplot','pandas','numpy'],
     license='General Public License 3.0',
     #long_description=open('README.md').read(),
 )
