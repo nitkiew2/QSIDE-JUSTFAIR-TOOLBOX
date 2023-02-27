@@ -12,7 +12,7 @@ from setuptools import setup
 setup(
     name='JUSTFAIR_Tools',
     version='0.1dev',
-    packages=['JUSTFAIR_Tools', 'matplotlib','pandas'],
-    license='General Public License 3.0',
+    packages= ['JUSTFAIR_Tools'],
+    license='General Public License 3.0'
     #long_description=open('README.md').read(),
 )
