@@ -10,9 +10,9 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='JUSTFAIR_Toolbox',
+    name='JUSTFAIR_Tools',
     version='0.1dev',
-    packages=find_packages(),
+    packages=['JUSTFAIR_Tools', 'matplotlib','pandas'],
     license='General Public License 3.0',
     #long_description=open('README.md').read(),
 )
