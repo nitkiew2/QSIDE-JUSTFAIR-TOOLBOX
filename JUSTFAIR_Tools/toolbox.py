@@ -8,3 +8,7 @@ Created on Mon Feb 27 14:20:21 2023
 
 def hello_world():
     print('hello world!')
+    
+    
+def matplotlib_test():
+    plt.plot([0,1],[0,1])

@@ -7,4 +7,4 @@ Created on Mon Feb 27 14:17:13 2023
 """
 
 #import hello_world from JUSTFAIR_tools
-from JUSTFAIR_tools.toolbox import hello_world
+from toolbox import hello_world
