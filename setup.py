@@ -6,7 +6,7 @@ Created on Mon Feb 27 15:01:53 2023
 @author: jason
 """
 
-from setuptools import find_packages
+#from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -14,6 +14,6 @@ setup(
     version='0.1dev',
     packages= ['JUSTFAIR_Tools'],
     license='General Public License 3.0',
-    install_requires = ['matplotlib', 'pandas']
+    install_requires = ['matplotlib', 'pandas', 'numpy']
     #long_description=open('README.md').read(),
 )
