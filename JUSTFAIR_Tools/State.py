@@ -32,13 +32,13 @@ class State:
         self.yearly_average_percents = {}  # dictionary, state averages for all people for each year
                                              # format of: year (int) --> [averages_list]
         
-        self.years = np.sort(self.data[self.paths['year'][0]].unique())  # generate a sorted list of years for data
+        self.years = np.sort(self.data[self.paths['year'].df_colname].unique())  # generate a sorted list of years for data
 
         
         
         ###  get average_percents
-        counts = self.data.groupby(self.paths['departure'][0]).count()
-        counts = counts.rename(self.paths['departure'][1])
+        counts = self.data.groupby(self.paths['departure'].df_colname).count()
+        counts = counts.rename(self.paths['departure'].levels)
         counts = counts.iloc[:,0]
 
         for item in self.order_of_outputs:
@@ -46,9 +46,9 @@ class State:
         
         ### get yearly_average_percents
         for year in self.years:
-            subset_dat = self.data[ self.data[self.paths['year'][0] ] == year]
-            counts = subset_dat.groupby(self.paths['departure'][0]).count()
-            counts = counts.rename(self.paths['departure'][1])
+            subset_dat = self.data[ self.data[self.paths['year'].df_colname ] == year]
+            counts = subset_dat.groupby(self.paths['departure'].df_colname).count()
+            counts = counts.rename(self.paths['departure'].levels)
             counts = counts.iloc[:,0]
             
             percentages = []

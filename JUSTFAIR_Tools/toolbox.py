@@ -13,7 +13,6 @@ def hello_world():
     
     
 def matplotlib_test():
-    
     plt.plot([0,1],[0,1])
     
 def numpy_test():
