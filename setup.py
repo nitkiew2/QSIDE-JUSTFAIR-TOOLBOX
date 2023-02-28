@@ -13,6 +13,7 @@ setup(
     name='JUSTFAIR_Tools',
     version='0.1dev',
     packages= ['JUSTFAIR_Tools'],
-    license='General Public License 3.0'
+    license='General Public License 3.0',
+    install_requires = ['matplotlib']
     #long_description=open('README.md').read(),
 )
