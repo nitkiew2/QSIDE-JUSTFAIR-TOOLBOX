@@ -14,6 +14,6 @@ setup(
     version='0.1dev',
     packages= ['JUSTFAIR_Tools'],
     license='General Public License 3.0',
-    install_requires = ['matplotlib']
+    install_requires = ['matplotlib', 'pandas']
     #long_description=open('README.md').read(),
 )
