@@ -57,24 +57,24 @@ class State:
             
 ### Generalizable Multi-Level Summary
 
-    def generalizable_multi_level_summary(self, stateobj, inp_list_of_groups = ['departure'], years = None, plot = 'stacked bar'):
-        '''
-        Grouping by any combination (or none) of factor variables.  There is only one assumption to calling this function: the last level passed into inp_list_of_groups.  
-        Basically, calling with only \['departure'\] means we are not grouping by any factor variable. This is a multi-level analysis of the path groups that are specified
-        using the inp_list_of_groups parameter. Using the plot parameter you can specify if you want a bar, stacked bar or pie. 
+def generalizable_multi_level_summary(self, stateobj, inp_list_of_groups = ['departure'], years = None, plot = 'stacked bar'):
+    '''
+    Grouping by any combination (or none) of factor variables.  There is only one assumption to calling this function: the last level passed into inp_list_of_groups.  
+    Basically, calling with only \['departure'\] means we are not grouping by any factor variable. This is a multi-level analysis of the path groups that are specified
+    using the inp_list_of_groups parameter. Using the plot parameter you can specify if you want a bar, stacked bar or pie. 
 
-        Parameters:
-            stateobj: the state in question.  We need the state's yearly_average_percents to plot the graph
-            inp_list_of_groups: Choose path description using string name
-            years: the specified years.  Either a range or none
-            plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
-            
-        Returns:
-            Specified type of plot and data table of the specified data
-        '''
-        # we should have a subplots vs stacked parameter here maybe?  either do lots of individual graphs or stacked
-        subset_dat = filter_years(self.data, years)  #first, filter for the years we are looking for
-        return subset_data_multi_level_summary(self.data, subset_dat, self.name, inp_list_of_groups, plot)
+    Parameters:
+        stateobj: the state in question.  We need the state's yearly_average_percents to plot the graph
+        inp_list_of_groups: Choose path description using string name
+        years: the specified years.  Either a range or none
+        plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
+
+    Returns:
+        Specified type of plot and data table of the specified data
+    '''
+    # we should have a subplots vs stacked parameter here maybe?  either do lots of individual graphs or stacked
+    subset_dat = filter_years(self.data, years)  #first, filter for the years we are looking for
+    return subset_data_multi_level_summary(self.data, subset_dat, self.name, inp_list_of_groups, plot)
     
 ### Filter Years
 
@@ -218,7 +218,7 @@ def plot_departures_stacked(self, x_values_list, y_values_list, base_group_str, 
         b += y_values_list[i]
     ax.set_xlabel('Percentage')
     ax.set_xlim((-5,105))
-    ttl = 'Proportional sentences for '+ base_group_str + ' ' + subgroup_str
+    ttl = 'Proportional sentences for '+ base_group_str[0] + ' ' + subgroup_str
     ax.set_title(ttl)
     ax.legend(bbox_to_anchor = (1.45, 0.6), loc='center right')
 
@@ -527,5 +527,87 @@ def state_trends(self, stateobj, compressed = False):
             ax.set_xlabel('year')
             ax.set_ylabel('percentage (%)')
 
+### Individual Section Analysis
 
+def individual_section_analysis(stateobj, section_name, inp_list_of_groups = ['departure'], years = None, plot = True):
+    '''
+    Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
+
+    Parameters:
+        stateobj: a state object
+        section_name: name of the judge, for formatting the title
+        inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
+        years: the specified years.  Either a range or none
+        plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
+
+    Returns:
+        Plots of subset of specified data for judges sentencing length
+    '''
+    section_filtered_data = stateobj.data[stateobj.data[stateobj.paths['judge'][0]]== section_name]
+    # get the years where the judge was active
+    overlapping_years = years
+    if years is None:
+        overlapping_years = np.sort(section_filtered_data[stateobj.paths['year'][0]].unique())
+    print(section_name, 'was active in the years:', overlapping_years)
+    
+    groups_to_filter_by = []  # this list keeps track of the column names in our stateobj.data we are grouping by
+    # get the column names in our stateobj.data we are grouping by
+    for group in inp_list_of_groups:
+        groups_to_filter_by.append(stateobj.paths[group][0])
+    #groups_to_filter_by.append(stateobj.paths['departure'][0])  # add departure as a group by on the end, as that is our 
+                                                                # the variable we are looking at
+    
+    #time to get the aggregate
+    
+    
+    #grouping by 
+    #divide by count(all_items_but_daparture) for departure percentages for each subgroup
+    counts = section_filtered_data.groupby(stateobj.paths['departure'][0]).count()
+    perc = round( (100 * counts/ section_filtered_data.shape[0]),2)  #if we are just grouping by departure, 
+                                                                   #we divide by data frame length
+    # renames the values that have levels
+    perc = perc.rename(stateobj.paths['departure'][1], level = 0)
+    counts = counts.rename(stateobj.paths['departure'][1], level = 0)
+
+    # pull the data we need from our dataframes    
+    perc = perc.iloc[:,0]  # all columns are the same, so we pull the first one
+    counts = counts.iloc[:,0]  # all columns are the same, so we pull the first one
+    
+    #create an output dataframe to return
+    agg_comb_df = pd.concat([counts,perc],axis=1)  # combine our two columns into a dataframe
+    agg_comb_df.columns = ['count', 'percent']  # rename columns 
+    
+    state_avg_for_years = calc_state_avg_for_yearspan(stateobj, overlapping_years)
+    section_averages = []
+    for departure_type in stateobj.order_of_outputs:
+        section_averages.append(perc.loc[departure_type,])
+    
+    if plot:
+        plot_judge_vs_state(stateobj.order_of_outputs, section_averages, 
+                            state_avg_for_years, section_name, stateobj.name)
+    
+    #now we plot the changes over time vs the state
+    section_data_y = np.zeros((len(overlapping_years), len(stateobj.order_of_outputs)))
+    state_data_y = np.zeros((len(overlapping_years), len(stateobj.order_of_outputs)))
+    for year in range(len(overlapping_years)):
+        section_year_data = section_filtered_data[section_filtered_data[stateobj.paths['year'][0]]== overlapping_years[year]]
+        perc = round( (100 * section_year_data.groupby(stateobj.paths['departure'][0]).count()/ section_year_data.shape[0]),2)
+        perc = perc.rename(stateobj.paths['departure'][1], level = 0)
+        perc = perc.iloc[:,0]
+        
+        for departure_type in range(len(stateobj.order_of_outputs)):
+            if stateobj.order_of_outputs[departure_type] in perc.index:
+                section_data_y[year, departure_type] = perc.loc[stateobj.order_of_outputs[departure_type]]
+        
+        state_data_y[year] = stateobj.yearly_average_percents[overlapping_years[year]]
+
+    for departure_type in range(len(stateobj.order_of_outputs)):
+        if section_data_y[-1, departure_type] >= state_data_y[-1, departure_type]:
+            print(section_name, 'currently has a(n)', stateobj.order_of_outputs[departure_type], 'rate at or above state average in years queried')
+        else:
+            print(section_name, 'currently has a(n)', stateobj.order_of_outputs[departure_type], 'rate below state average in years queried')
+    
+    if plot:
+        plot_section_vs_state_trends(stateobj, overlapping_years, section_data_y, state_data_y, section_name) 
+        subset_data_multi_level_summary(stateobj, section_filtered_data, inp_list_of_groups, plot = 'stacked bar')
 
