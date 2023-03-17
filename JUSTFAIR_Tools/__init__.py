@@ -12,3 +12,4 @@ from JUSTFAIR_Tools.toolbox import *
 from JUSTFAIR_Tools.Path import *
 from JUSTFAIR_Tools.State import *
 from JUSTFAIR_Tools.Census import *
+from JUSTFAIR_Tools.plotting import *
