@@ -236,3 +236,40 @@ class State:
             plot_section_vs_state_trends(overlapping_years, section_data_y, state_data_y, section_name) 
             subset_data_multi_level_summary(section_filtered_data, inp_list_of_groups, plot = 'stacked bar')
 
+
+### Individual Section Analysis
+
+    def individual_section_analysis_v2(self, category_name, section_name, inp_list_of_groups = ['departure'], years = None, plot = True):
+        '''
+        Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
+
+        Parameters:
+            stateobj: a state object
+            section_name: name of the judge, for formatting the title
+            inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
+            years: the specified years.  Either a range or none
+            plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
+
+        Returns:
+            Plots of subset of specified data for judges sentencing length
+        '''
+        section_filtered_data = self.data[self.data[self.paths[category_name].df_colname]== section_name]
+        # get the years where the judge was active
+        overlapping_years = years
+        if years is None:
+            overlapping_years = np.sort(section_filtered_data[self.paths['year'].df_colname].unique())
+        print(section_name, 'was active in the years:', overlapping_years)
+
+        groups_to_filter_by = []  # this list keeps track of the column names in our stateobj.data we are grouping by
+        # get the column names in our stateobj.data we are grouping by
+        total_number_of_subgroups = 1
+        for group in inp_list_of_groups:
+            groups_to_filter_by.append(self.paths[group].df_colname)
+            total_number_of_subgroups = total_number_of_subgroups * len(self.paths[group].levels)
+        
+        section_data = np.zeros((len(overlapping_years), total_number_of_subgroups , len(self.order_of_outputs)))
+        # section_data[year][]
+
+
+
+        
