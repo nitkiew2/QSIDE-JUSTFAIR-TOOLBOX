@@ -10,7 +10,7 @@ import numpy as np
 
 ### Bar Plot
 
-def plot_departures_bar(departure_labels, departure_porportions,base_group_str, subgroup, s = True):
+def plot_departures_bar(departure_labels, departure_porportions, colors, base_group_str, subgroup, s = True):
     '''
     Used to plot a horizontal bar graph to view results.
 
@@ -31,7 +31,6 @@ def plot_departures_bar(departure_labels, departure_porportions,base_group_str, 
         subgroup_str+='s'
 
     fig, ax = plt.subplots(figsize = (10,7))
-    colors = ['lightcoral', 'lightgrey', 'cornflowerblue', 'turquoise']
 
     barh = ax.barh(departure_labels, departure_porportions, color=colors)
     ax.invert_yaxis()  # labels read top-to-bottom
@@ -45,7 +44,7 @@ def plot_departures_bar(departure_labels, departure_porportions,base_group_str, 
 
 ### Pie Chart
 
-def plot_departures_pie(departure_labels, departure_porportions, base_group_str, subgroup, s = True):
+def plot_departures_pie(departure_labels, departure_porportions, colors, base_group_str, subgroup, s = True):
     '''
     Used to plot a pie chart to view results.  This is just like the hoizontal bar graph, but a pie chart.
 
@@ -66,7 +65,6 @@ def plot_departures_pie(departure_labels, departure_porportions, base_group_str,
         subgroup_str+='s'
 
     fig, ax = plt.subplots(figsize = (10,7))
-    colors = ['lightcoral', 'lightgrey', 'cornflowerblue', 'turquoise']
 
     ax.pie(departure_porportions, labels=departure_labels, autopct='%1.1f%%', colors = colors)
 
@@ -76,7 +74,7 @@ def plot_departures_pie(departure_labels, departure_porportions, base_group_str,
 
 ### Stacked Bar Plot
 
-def plot_departures_stacked(x_values_list, y_values_list, base_group_str, subgroup, legend, s = True):
+def plot_departures_stacked(x_values_list, y_values_list, colors, base_group_str, subgroup, legend, s = True):
     '''
     Used to plot a stacked horizontal bar graph to view results.
 
@@ -99,11 +97,10 @@ def plot_departures_stacked(x_values_list, y_values_list, base_group_str, subgro
 
     fig, ax = plt.subplots(figsize = (12, 1 * len(x_values_list)))
 
-    bar_colors = ['lightcoral', 'lightgrey', 'cornflowerblue', 'turquoise']
 
     b = np.zeros(len(x_values_list))
     for i in range(len(y_values_list)):
-        ax.barh(x_values_list, y_values_list[i], left = b, color = bar_colors[i], label = legend[i], edgecolor='black')
+        ax.barh(x_values_list, y_values_list[i], left = b, color = colors[i], label = legend[i], edgecolor='black')
         b += y_values_list[i]
     ax.set_xlabel('Percentage')
     ax.set_xlim((-5,105))
@@ -235,3 +232,30 @@ def plot_section_vs_state_trends(stateobj, overlapping_years, section_data_y, st
     ax.set_xlabel('year')
     ax.set_ylabel('percentage (%)')
     ax.legend(loc = 'upper right')
+    
+    
+
+def plot_section_and_rest_data(x_data,section_y_data,rest_y_data, colors,
+                               population_subset,order_of_outputs, section_name, name):
+    
+    plt.figure()
+    # section data
+    for departure_type in range(len(section_y_data)):
+        plt.plot()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

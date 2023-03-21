@@ -29,7 +29,7 @@ def filter_years(stateobj, years):
     subset_dat = stateobj.data
     if years is not None:  
         # if the user specifies a year range, filter the data for those years
-        subset_dat = stateobj.data[stateobj.data[stateobj.paths['year'][0]].isin(years)]
+        subset_dat = stateobj.data[stateobj.data[stateobj.paths['year'].df_colname].isin(years)]
     return subset_dat
 
 ### Plotting Data
@@ -168,10 +168,10 @@ def subset_data_multi_level_summary(stateobj, subset_dat, base_group_str, inp_li
     comb_df = pd.concat([counts,perc],axis=1)  # combine our two columns into a dataframe
     comb_df.columns = ['count', 'percent']  # rename columns 
     if plot == 'stacked bar':
-        plot_df(stateobj, perc, 'stacked bar', inp_list_of_groups[:-1], base_group_str)  # call our plotting function
+        plot_df(stateobj, perc, stateobj.colors, 'stacked bar', inp_list_of_groups[:-1], base_group_str)  # call our plotting function
     elif plot == 'bar':
-        plot_df(stateobj, perc, 'bar', inp_list_of_groups[:-1], base_group_str)
+        plot_df(stateobj, perc, stateobj.colors, 'bar', inp_list_of_groups[:-1], base_group_str)
     elif plot == 'pie':
-        plot_df(stateobj, counts, 'pie', inp_list_of_groups[:-1], base_group_str)
+        plot_df(stateobj, counts, stateobj.colors, 'pie', inp_list_of_groups[:-1], base_group_str)
 
     return comb_df
