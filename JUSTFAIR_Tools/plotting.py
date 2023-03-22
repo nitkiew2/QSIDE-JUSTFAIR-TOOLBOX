@@ -233,15 +233,133 @@ def plot_section_vs_state_trends(stateobj, overlapping_years, section_data_y, st
     ax.set_ylabel('percentage (%)')
     ax.legend(loc = 'upper right')
     
+
+    
+def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data, colors,
+                               population_subset, order_of_outputs, section_name, state_name):
+    
+    # seeing which row goes on the top graph
+    section_y_data_medians = np.median(section_y_data, axis = 1)
+    highest_median_index = np.argmax(section_y_data_medians)
+    
+    section_y_upper = section_y_data[highest_median_index,:]
+    section_y_lower = np.delete(section_y_data,highest_median_index, axis = 0)
+    rest_y_upper = rest_y_data[highest_median_index,:]
+    rest_y_lower = np.delete(rest_y_data,highest_median_index, axis = 0)
+    
+    upper_max = np.max([np.max(section_y_upper), np.max(rest_y_upper)])
+    upper_min = np.min([np.min(section_y_upper), np.min(rest_y_upper)])
+    lower_max = np.max([np.max(section_y_lower), np.max(rest_y_lower)])
+    lower_min = np.min([np.min(section_y_lower), np.min(rest_y_lower)])
+    
+    
+    # source: https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
+    
+    fig, (top, bot) = plt.subplots(2, 1, sharex=True, figsize = (10,8))
+    fig.subplots_adjust(hspace=0.05)  # adjust space between axes
+    
+    #plot the top
+    lab = section_name + ' ' + order_of_outputs[highest_median_index]
+    top.plot(x_data, section_y_data[highest_median_index], '-o',
+             color = colors[highest_median_index], label = lab)
+    
+    lab = state_name + ' ' + order_of_outputs[highest_median_index]
+    top.plot(x_data, rest_y_data[highest_median_index], '--o',
+             color = colors[highest_median_index], label = lab)
+
+
+    #plot the bottom
+    for dep_type in range(len(order_of_outputs)):
+        if dep_type != highest_median_index:
+            lab = section_name + ' ' + order_of_outputs[dep_type]
+            bot.plot(x_data, section_y_data[dep_type], '-o',
+                     color = colors[dep_type], label = lab)
+            
+            lab = state_name + ' ' + order_of_outputs[dep_type]
+            bot.plot(x_data, rest_y_data[dep_type], '--o',
+                     color = colors[dep_type], label = lab)
+    
+    # zoom-in / limit the view to different portions of the data
+    top.legend()
+    bot.legend()
+    top.set_ylim(upper_min*0.95, np.max([upper_max*1.05,1]))  # top section
+    bot.set_ylim(lower_min*0.95, lower_max*1.05)  #bottom section
+    
+    # hide the spines between top and bot
+    top.spines.bottom.set_visible(False)
+    bot.spines.top.set_visible(False)
+    top.xaxis.tick_top()
+    top.tick_params(labeltop=False)  # don't put tick labels at the top
+    bot.xaxis.tick_bottom()
+    
+    #this part creates the split
+    
+    d = .5  # proportion of vertical to horizontal extent of the slanted line
+    kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+                  linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+    top.plot([0, 1], [0, 0], transform=top.transAxes, **kwargs)
+    bot.plot([0, 1], [1, 1], transform=bot.transAxes, **kwargs)
+    
+    # add titles and labels
+    bot.set(xlabel='year', ylabel='percentage')
+    ttl = section_name +' vs ' + state_name + ' on ' + population_subset + ' sentencing'
+    fig.suptitle(ttl)
+    
+    
+    #second graph, differences (judge data - rest of data, so if judge is higher we see a positive number)
+    plt.figure(figsize = (10,4))
+    diffs = section_y_data - rest_y_data
+    for dep_type in range(len(order_of_outputs)):
+        plt.plot(x_data, diffs[dep_type], '-o',
+            color = colors[dep_type], label = order_of_outputs[dep_type])
+    plt.axhline(y=0, color = 'black')
+    ttl = section_name +' vs ' + state_name + ' differences on ' + population_subset + ' sentencing'
+    plt.title(ttl)
+    plt.legend()
+        
+
+def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, colors,
+                               population_subset,order_of_outputs, section_name, state_name):
+    plt.figure()
+    for dep_type in range(len(order_of_outputs)):
+        lab = section_name + ' ' + order_of_outputs[dep_type]
+        plt.plot(x_data, section_y_data[dep_type], '-o',
+                 color = colors[dep_type], label = lab)
+        
+        lab = state_name + ' ' + order_of_outputs[dep_type]
+        plt.plot(x_data, rest_y_data[dep_type], '--o',
+                 color = colors[dep_type], label = lab)
+    
+    ttl = section_name +' vs ' + state_name + ' on ' + population_subset + ' sentencing'
+    plt.title(ttl)
+    plt.legend()
+    
+    plt.figure()
+    diffs = section_y_data - rest_y_data
+    for dep_type in range(len(order_of_outputs)):
+        plt.plot(x_data, diffs[dep_type], '-o',
+            color = colors[dep_type], label = order_of_outputs[dep_type])
+    plt.axhline(y=0, color = 'black')
+    ttl = section_name +' vs ' + state_name + ' differences on ' + population_subset + ' sentencing'
+    plt.title(ttl)
+    plt.legend()
     
 
 def plot_section_and_rest_data(x_data,section_y_data,rest_y_data, colors,
-                               population_subset,order_of_outputs, section_name, name):
+                               population_subset,order_of_outputs, section_name, state_name):
     
-    plt.figure()
-    # section data
-    for departure_type in range(len(section_y_data)):
-        plt.plot()
+    section_y_data_medians = np.median(section_y_data, axis = 1)
+    rest_y_data_medians = np.median(rest_y_data, axis = 1)
+    
+    comb_max = np.max([np.max(section_y_data_medians),np.max( rest_y_data_medians)])
+    comb_min = np.min([np.min(section_y_data_medians), np.min(rest_y_data_medians)])
+    
+    if comb_max-comb_min > 0.5:
+        section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data, colors,
+                                       population_subset, order_of_outputs, section_name, state_name)
+    else:
+        section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, colors,
+                                       population_subset,order_of_outputs, section_name, state_name)
     
     
     
