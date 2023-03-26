@@ -11,7 +11,9 @@ ________________________________________________________________________________
 1. Find social justice issues within the Judicial System by collecting case data across the United States.
 2. Examine further into the already known data if there are disproportionate BIPOC offenders to white offenders for the same    style of crime
 
-Video Description: https://drive.google.com/file/d/11tRrQ_5m83ux74n_uJeeIybmjLq1iAmv/view
+Project Proposal Video (Open Loop): https://drive.google.com/file/d/11tRrQ_5m83ux74n_uJeeIybmjLq1iAmv/view
+
+Installation and Further Details (Closed Loop): https://drive.google.com/file/d/1fiBHVvzFmx_yZXL-qwgpMNXQOOeIj_5T/view?usp=sharing
 
 --------------------------------------------------------------------------------------------------
 
@@ -28,10 +30,9 @@ https://qsideinstitute.org/research/criminal-justice/justfair/
 
 ### Tasks:
 
-  - First we have to analyze the dataset to identify important information.
+  - Analyze the dataset to identify important information.
   - Analyze variations from state-to-state between judicial districts.
-  - Answer questions such as: How is the data organized? How do we make this data more efficient for future researchers?
-  - May involve editing/creating website or cleaning publications of data sets/
+  - Answer questions such as: How is the data organized? How do we make this data more efficient for future researchers?  How do we display data in lamens terms? Are       people being sentenced at higher or lower rates? Are Judges sentencing at irregular rates compared to the standard average rate?
 
 
 ----------------------------------------------------------------------------------------------------
@@ -40,4 +41,4 @@ https://qsideinstitute.org/research/criminal-justice/justfair/
 ### Installation:
 
   - Software needed: GitHub, Python (Jupyter Notebook)
-  - installation instructions are in installation_requirements.txt
+  - Installation instructions found in Install.md
