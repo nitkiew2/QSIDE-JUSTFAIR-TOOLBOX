@@ -3,7 +3,7 @@
 
 #### Works across all systems (Linux, Mac OS X, and Windows)
 
-Programming language runs off python. You can choose what ever IDE you want to work with. The IDE is how you utilize the python package we created given user has access to State data. You can also use data pulled from American Community Survey (ACS) Census Bureau data given the Census object. 
+Programming language runs off Python and uses the Python packages Matplotlib, NumPy, and Pandas. You can choose what ever IDE you want to work with. The IDE is how you utilize the python package we created given user has access to State data. You can also use data pulled from American Community Survey (ACS) Census Bureau data given the Census object. 
 
 --------------------------------------------------------------------------
 
