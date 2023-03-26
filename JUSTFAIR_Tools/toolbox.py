@@ -86,14 +86,14 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
                     if loc_id in df.index:
                         porportions[dep, unique_id] = df.loc[loc_id,]
             #plot
-            plot_departures_stacked(unique_identifier_strings, porportions, base_group_str, groups, stateobj.order_of_outputs)
+            plot_departures_stacked(unique_identifier_strings, porportions, stateobj.colors, base_group_str, groups, stateobj.order_of_outputs)
         else:  # just departure
             porportions = []
             for departure_type in stateobj.order_of_outputs:
                 porportions.append(df.loc[departure_type,])
             #plot
             groups.insert(0, stateobj.name)  # we need the state name for plotting purposes
-            plot_departures_stacked([stateobj.name], porportions, base_group_str, groups, stateobj.order_of_outputs, s = False)
+            plot_departures_stacked([stateobj.name], porportions, stateobj.colors, base_group_str, groups, stateobj.order_of_outputs, s = False)
 
     if plot_type == 'bar' or plot_type == 'pie':  # not stacked bars
         if len(groups) > 0:  #we're dealing with more then one grouping variable
@@ -108,17 +108,17 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
 
                 unique_id = (stateobj.name,) + unique_id
                 if plot_type == 'bar':
-                    plot_departures_bar(stateobj.order_of_outputs, porportions, base_group_str, unique_id)
+                    plot_departures_bar(stateobj.order_of_outputs, porportions, stateobj.colors, base_group_str, unique_id)
                 else:  # pie
-                    plot_departures_pie(stateobj.order_of_outputs, porportions, base_group_str, unique_id)
+                    plot_departures_pie(stateobj.order_of_outputs, porportions, stateobj.colors, base_group_str, unique_id)
         else:
             porportions = []
             for departure_type in stateobj.order_of_outputs:
                 porportions.append(df.loc[departure_type,])
             if plot_type == 'bar':
-                plot_departures_bar(stateobj.order_of_outputs, porportions, base_group_str, [], s = False) 
+                plot_departures_bar(stateobj.order_of_outputs, porportions, stateobj.colors, base_group_str, [], s = False) 
             else:  # pie
-                plot_departures_pie(stateobj.order_of_outputs, porportions, base_group_str, [], s = False)  
+                plot_departures_pie(stateobj.order_of_outputs, porportions, stateobj.colors, base_group_str, [], s = False)  
 
 ### Filtered Multilevel Summary
 
@@ -168,10 +168,10 @@ def subset_data_multi_level_summary(stateobj, subset_dat, base_group_str, inp_li
     comb_df = pd.concat([counts,perc],axis=1)  # combine our two columns into a dataframe
     comb_df.columns = ['count', 'percent']  # rename columns 
     if plot == 'stacked bar':
-        plot_df(stateobj, perc, stateobj.colors, 'stacked bar', inp_list_of_groups[:-1], base_group_str)  # call our plotting function
+        plot_df(stateobj, perc, 'stacked bar', inp_list_of_groups[:-1], base_group_str)  # call our plotting function
     elif plot == 'bar':
-        plot_df(stateobj, perc, stateobj.colors, 'bar', inp_list_of_groups[:-1], base_group_str)
+        plot_df(stateobj, perc, 'bar', inp_list_of_groups[:-1], base_group_str)
     elif plot == 'pie':
-        plot_df(stateobj, counts, stateobj.colors, 'pie', inp_list_of_groups[:-1], base_group_str)
-
+        plot_df(stateobj, counts, 'pie', inp_list_of_groups[:-1], base_group_str)
+        
     return comb_df
