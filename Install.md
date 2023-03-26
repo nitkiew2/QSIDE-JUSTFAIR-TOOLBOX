@@ -26,11 +26,14 @@ For **installing** the package, within your IDE work file/cell, run the followin
 
 In order to run the package after installation, you need to import *JUSTFAIR_Toolbox* using the following code 
     
-`import JUSTFAIR_Tools as jt
-from JUSTFAIR_Tools import State
-from JUSTFAIR_Tools import Census
-from JUSTFAIR_Tools import toolbox
-`
+`import JUSTFAIR_Tools as jt`
+
+`from JUSTFAIR_Tools import State`
+
+`from JUSTFAIR_Tools import Census`
+
+`from JUSTFAIR_Tools import toolbox`
+
 
 #### 4. See *Package_testing.ipynb* for examples how to use the package
 
