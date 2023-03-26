@@ -52,7 +52,7 @@ Create dictionary objects for states (object holding the data information per st
 
 #### 2. Accessing Census Data
 
-         WE DONT HAVE TO FILL THIS IN TILL WE KNOW IF WE ARE USING CENSUS DATA
+         DONT HAVE TO FILL THIS IN TILL WE KNOW IF WE ARE USING CENSUS DATA, WORKING ON UTILIZING CENPY PYTHON PACKAGE AS MEANS TO COLLECT CENSUS DATA FOR OBJECT
 
 
 
