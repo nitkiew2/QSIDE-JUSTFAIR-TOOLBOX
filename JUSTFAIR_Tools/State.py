@@ -156,89 +156,6 @@ class State:
                 ax.set_xlabel('year')
                 ax.set_ylabel('percentage (%)')
 
-### Individual Section Analysis
-
-    def individual_section_analysis(self, category_name, section_name, inp_list_of_groups = ['departure'], years = None, plot = True):
-        '''
-        Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
-
-        Parameters:
-            stateobj: a state object
-            section_name: name of the judge, for formatting the title
-            inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
-            years: the specified years.  Either a range or none
-            plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
-
-        Returns:
-            Plots of subset of specified data for judges sentencing length
-        '''
-        section_filtered_data = self.data[self.data[self.paths[category_name].df_colname]== section_name]
-        # get the years where the judge was active
-        overlapping_years = years
-        if years is None:
-            overlapping_years = np.sort(section_filtered_data[self.paths['year'].df_colname].unique())
-        print(section_name, 'was active in the years:', overlapping_years)
-
-        groups_to_filter_by = []  # this list keeps track of the column names in our stateobj.data we are grouping by
-        # get the column names in our stateobj.data we are grouping by
-        for group in inp_list_of_groups:
-            groups_to_filter_by.append(self.paths[group].df_colname)
-        #groups_to_filter_by.append(stateobj.paths['departure'][0])  # add departure as a group by on the end, as that is our 
-                                                                    # the variable we are looking at
-
-        #time to get the aggregate
-
-
-        #grouping by 
-        #divide by count(all_items_but_daparture) for departure percentages for each subgroup
-        counts = section_filtered_data.groupby(self.paths['departure'].df_colname).count()
-        perc = round( (100 * counts/ section_filtered_data.shape[0]),2)  #if we are just grouping by departure, 
-                                                                       #we divide by data frame length
-        # renames the values that have levels
-        perc = perc.rename(self.paths['departure'].levels, level = 0)
-        counts = counts.rename(self.paths['departure'].levels, level = 0)
-
-        # pull the data we need from our dataframes    
-        perc = perc.iloc[:,0]  # all columns are the same, so we pull the first one
-        counts = counts.iloc[:,0]  # all columns are the same, so we pull the first one
-
-        #create an output dataframe to return
-        agg_comb_df = pd.concat([counts,perc],axis=1)  # combine our two columns into a dataframe
-        agg_comb_df.columns = ['count', 'percent']  # rename columns 
-
-        state_avg_for_years = self.calc_state_avg_for_yearspan(overlapping_years)
-        section_averages = []
-        for departure_type in self.order_of_outputs:
-            section_averages.append(perc.loc[departure_type,])
-
-        if plot:
-            plot_section_vs_state(self.order_of_outputs, section_averages, 
-                                state_avg_for_years, section_name, self.name)
-
-        #now we plot the changes over time vs the state
-        section_data_y = np.zeros((len(overlapping_years), len(self.order_of_outputs)))
-        state_data_y = np.zeros((len(overlapping_years), len(self.order_of_outputs)))
-        for year in range(len(overlapping_years)):
-            section_year_data = section_filtered_data[section_filtered_data[self.paths['year'][0]]== overlapping_years[year]]
-            perc = round( (100 * section_year_data.groupby(self.paths['departure'][0]).count()/ section_year_data.shape[0]),2)
-            perc = perc.rename(self.paths['departure'][1], level = 0)
-            perc = perc.iloc[:,0]
-
-            for departure_type in range(len(self.order_of_outputs)):
-                if self.order_of_outputs[departure_type] in perc.index:
-                    section_data_y[year, departure_type] = perc.loc[self.order_of_outputs[departure_type]]
-
-            state_data_y[year] = self.yearly_average_percents[overlapping_years[year]]
-
-        for departure_type in range(len(self.order_of_outputs)):
-            if section_data_y[-1, departure_type] >= state_data_y[-1, departure_type]:
-                print(section_name, 'currently has a(n)', self.order_of_outputs[departure_type], 'rate at or above state average in years queried')
-            else:
-                print(section_name, 'currently has a(n)', self.order_of_outputs[departure_type], 'rate below state average in years queried')
-
-        if plot:
-            plot_section_vs_state_trends(overlapping_years, section_data_y, state_data_y, section_name) 
-            subset_data_multi_level_summary(section_filtered_data, inp_list_of_groups, plot = 'stacked bar')
 
 
 ### Individual Section Analysis
@@ -365,8 +282,9 @@ class State:
                     for departure_type in range(len(self.order_of_outputs)):
                         section_y_data[departure_type][year] = years_lst[year][1][departure_type][unique_id]
                         rest_y_data[departure_type][year] = years_lst[year][2][departure_type][unique_id]
-                plot_section_and_rest_data(overlapping_years,section_y_data,rest_y_data, self.colors, 
-                                           unique_identifier_strings[unique_id], self.order_of_outputs, section_name, self.name)
+                if plot:
+                    plot_section_and_rest_data(overlapping_years,section_y_data,rest_y_data, self.colors, 
+                                               unique_identifier_strings[unique_id], self.order_of_outputs, section_name, self.name)
             return ret_pandas_data     
 
                 
@@ -387,9 +305,9 @@ class State:
                         section_data[dep_type, year] = year_section_breakdown.loc[self.order_of_outputs[dep_type],'percent']
                     if self.order_of_outputs[dep_type] in year_restof_breakdown.index:
                         rest_of_data[dep_type, year] = year_restof_breakdown.loc[self.order_of_outputs[dep_type],'percent']
-                        
-            plot_section_and_rest_data(overlapping_years,section_data,rest_of_data, self.colors, 
-                                       'all', self.order_of_outputs, section_name, self.name)
+            if plot:            
+                plot_section_and_rest_data(overlapping_years,section_data,rest_of_data, self.colors, 
+                                           'all', self.order_of_outputs, section_name, self.name)
             return section_allyr_stats, rest_allyr_stats
             
 
