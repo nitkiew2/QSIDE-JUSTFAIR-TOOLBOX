@@ -242,19 +242,18 @@ class State:
                     else: 
                         print(section_name, category_name,'currently has an average', departure_type, 'rate about at state average in years queried')
 
-
-        #now we get the data for graphing: multiple levels in inp_list_of_groups
+        #  now we get the data for graphing: multiple levels in inp_list_of_groups
         if rest_allyr_stats.index.nlevels > 1:
-            #now we create the data for the by year graphs
-            years_lst = []    #list of lists for each year we will append a lis tof [year, section_breakdown, rest_breakdown]
+            #  now we create the data for the by year graphs
+            years_lst = []  #list of lists for each year we will append a lis tof [year, section_breakdown, rest_breakdown]
             ret_pandas_data = {}
             
             for year in overlapping_years:
-                #first, filter our data for the year we want
+                #  first, filter our data for the year we want
                 year_section_data = section_filtered_data[section_filtered_data[self.paths['year'].df_colname]==year]
                 year_rest_of_state_data = rest_of_the_state[rest_of_the_state[self.paths['year'].df_colname]==year]
                 
-                #now we group by to get section breakdowns
+                #  now we group by to get section breakdowns
                 year_section_breakdown = subset_data_multi_level_summary(self, year_section_data, section_name, inp_list_of_groups, plot = None)
                 year_restof_breakdown = subset_data_multi_level_summary(self, year_rest_of_state_data, self.name, inp_list_of_groups, plot = None)
     
@@ -273,7 +272,7 @@ class State:
                 years_lst.append([year, section_data, rest_of_data])
                 ret_pandas_data[year] = [year_section_breakdown, year_restof_breakdown]
                 
-            #now it's time to make graphs
+            #  now it's time to make graphs
             
             for unique_id in range(len(unique_identifiers)):
                 section_y_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
@@ -283,12 +282,12 @@ class State:
                         section_y_data[departure_type][year] = years_lst[year][1][departure_type][unique_id]
                         rest_y_data[departure_type][year] = years_lst[year][2][departure_type][unique_id]
                 if plot:
+                    print('plotting')
                     plot_section_and_rest_data(overlapping_years,section_y_data,rest_y_data, self.colors, 
                                                unique_identifier_strings[unique_id], self.order_of_outputs, section_name, self.name)
             return ret_pandas_data     
 
-                
-        else:  # this si if we are only grouping by departure
+        else:  # this is if we are only grouping by departure
             section_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
             rest_of_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
             
@@ -296,7 +295,7 @@ class State:
                 year_section_data = section_filtered_data[section_filtered_data[self.paths['year'].df_colname]==overlapping_years[year]]
                 year_rest_of_state_data = rest_of_the_state[rest_of_the_state[self.paths['year'].df_colname]==overlapping_years[year]]
                 
-                #now we group by to get section breakdowns
+                #  now we group by to get section breakdowns
                 year_section_breakdown = subset_data_multi_level_summary(self, year_section_data, section_name, inp_list_of_groups, plot = None)
                 year_restof_breakdown = subset_data_multi_level_summary(self, year_rest_of_state_data, self.name, inp_list_of_groups, plot = None)
                 
@@ -305,7 +304,8 @@ class State:
                         section_data[dep_type, year] = year_section_breakdown.loc[self.order_of_outputs[dep_type],'percent']
                     if self.order_of_outputs[dep_type] in year_restof_breakdown.index:
                         rest_of_data[dep_type, year] = year_restof_breakdown.loc[self.order_of_outputs[dep_type],'percent']
-            if plot:            
+            if plot:
+                print('plotting')
                 plot_section_and_rest_data(overlapping_years,section_data,rest_of_data, self.colors, 
                                            'all', self.order_of_outputs, section_name, self.name)
             return section_allyr_stats, rest_allyr_stats
