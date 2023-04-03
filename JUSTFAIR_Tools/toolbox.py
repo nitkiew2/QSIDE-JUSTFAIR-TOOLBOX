@@ -333,22 +333,22 @@ def compare_section_to_larger_group(stateobj, section_category_name, section_nam
                     rest_y_data[departure_type][year] = years_lst[year]['rest_percents'][departure_type][unique_id]
                     section_y_counts[departure_type][year] = years_lst[year]['section_counts'][departure_type][unique_id]
             if plot:
-                section_y_counts = np.sum(section_y_counts, axis=0)
-                print('plotting')
-                plot_section_and_rest_data(overlapping_years, section_y_data, rest_y_data, stateobj.colors,
-                                           unique_identifier_strings[unique_id], stateobj.order_of_outputs, section_name,
-                                           stateobj.name)
+                section_count = np.sum(section_y_counts)
+                plot_section_and_rest_data(overlapping_years, section_y_data, rest_y_data, section_count, 
+                                           stateobj.colors, unique_identifier_strings[unique_id], stateobj.order_of_outputs, 
+                                           section_name, section_category_name,
+                                           larger_group_name, larger_group_category_name)
+                
         return ret_pandas_data
 
     else:  # this is if we are only grouping by departure
-        section_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
-        rest_of_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
-
+        section_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
+        rest_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
+        section_y_counts = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
+        section_y_counts = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
         for year in range(len(overlapping_years)):
-            year_section_data = section_filtered_data[
-                section_filtered_data[stateobj.paths['year'].df_colname] == overlapping_years[year]]
-            year_rest_of_larger_data = rest_of_the_larger_section[
-                rest_of_the_larger_section[stateobj.paths['year'].df_colname] == overlapping_years[year]]
+            year_section_data = section_filtered_data[section_filtered_data[stateobj.paths['year'].df_colname] == overlapping_years[year]]
+            year_rest_of_larger_data = rest_of_the_larger_section[rest_of_the_larger_section[stateobj.paths['year'].df_colname] == overlapping_years[year]]
 
             #  now we group by to get section breakdowns
             year_section_breakdown = subset_data_multi_level_summary(stateobj, year_section_data, section_name,
@@ -358,12 +358,21 @@ def compare_section_to_larger_group(stateobj, section_category_name, section_nam
 
             for dep_type in range(len(stateobj.order_of_outputs)):
                 if stateobj.order_of_outputs[dep_type] in year_section_breakdown.index:
-                    section_data[dep_type, year] = year_section_breakdown.loc[
+                    section_y_data[dep_type, year] = year_section_breakdown.loc[
                         stateobj.order_of_outputs[dep_type], 'percent']
+                    section_y_counts[dep_type, year] = year_section_breakdown.loc[
+                        stateobj.order_of_outputs[dep_type], 'count']
                 if stateobj.order_of_outputs[dep_type] in year_restof_breakdown.index:
-                    rest_of_data[dep_type, year] = year_restof_breakdown.loc[stateobj.order_of_outputs[dep_type], 'percent']
+                    rest_y_data[dep_type, year] = year_restof_breakdown.loc[stateobj.order_of_outputs[dep_type], 'percent']
         if plot:
-            print('plotting')
-            plot_section_and_rest_data(overlapping_years, section_data, rest_of_data, stateobj.colors,
-                                       'all', stateobj.order_of_outputs, section_name, stateobj.name)
+            section_count = np.sum(section_y_counts)
+            plot_section_and_rest_data(overlapping_years, section_y_data, rest_y_data, section_count, 
+                                       stateobj.colors,'all', stateobj.order_of_outputs, 
+                                       section_name, section_category_name,
+                                       larger_group_name, larger_group_category_name)
+            
         return section_allyr_stats, rest_allyr_stats
+    
+    
+    
+    

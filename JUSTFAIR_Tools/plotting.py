@@ -235,8 +235,10 @@ def plot_section_vs_state_trends(stateobj, overlapping_years, section_data_y, st
     
 
     
-def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data, colors,
-                               population_subset, order_of_outputs, section_name, state_name):
+def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data, count, 
+                                                      colors,population_subset, order_of_outputs, 
+                                                      section_name, section_category_name,
+                                                      larger_group_name, larger_group_category_name):
     
     # seeing which row goes on the top graph
     section_y_data_medians = np.median(section_y_data, axis = 1)
@@ -263,7 +265,7 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
     top.plot(x_data, section_y_data[highest_median_index], '-o',
              color = colors[highest_median_index], label = lab)
     
-    lab = state_name + ' ' + order_of_outputs[highest_median_index]
+    lab = larger_group_name + ' ' + order_of_outputs[highest_median_index]
     top.plot(x_data, rest_y_data[highest_median_index], '--o',
              color = colors[highest_median_index], label = lab)
 
@@ -275,7 +277,7 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
             bot.plot(x_data, section_y_data[dep_type], '-o',
                      color = colors[dep_type], label = lab)
             
-            lab = state_name + ' ' + order_of_outputs[dep_type]
+            lab = larger_group_name + ' ' + order_of_outputs[dep_type]
             bot.plot(x_data, rest_y_data[dep_type], '--o',
                      color = colors[dep_type], label = lab)
     
@@ -302,7 +304,7 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
     
     # add titles and labels
     bot.set(xlabel='year', ylabel='percentage')
-    ttl = section_name +' vs ' + state_name + ' on ' + population_subset + ' sentencing'
+    ttl = section_name +' vs ' + larger_group_name + ' on ' + population_subset + ' sentencing.  N=' + str(count)
     fig.suptitle(ttl)
     
     
@@ -313,24 +315,25 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
         plt.plot(x_data, diffs[dep_type], '-o',
             color = colors[dep_type], label = order_of_outputs[dep_type])
     plt.axhline(y=0, color = 'black')
-    ttl = section_name +' vs ' + state_name + ' differences on ' + population_subset + ' sentencing'
+    ttl = section_name +' vs ' + larger_group_name + ' differences on ' + population_subset + ' sentencing'
     plt.title(ttl)
     plt.legend()
         
 
-def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, colors,
-                               population_subset,order_of_outputs, section_name, state_name):
+def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, count, colors,
+                               population_subset,order_of_outputs, section_name, section_category_name,
+                               larger_group_name, larger_group_category_name):
     plt.figure()
     for dep_type in range(len(order_of_outputs)):
         lab = section_name + ' ' + order_of_outputs[dep_type]
         plt.plot(x_data, section_y_data[dep_type], '-o',
                  color = colors[dep_type], label = lab)
         
-        lab = state_name + ' ' + order_of_outputs[dep_type]
+        lab = larger_group_name + ' ' + order_of_outputs[dep_type]
         plt.plot(x_data, rest_y_data[dep_type], '--o',
                  color = colors[dep_type], label = lab)
     
-    ttl = section_name +' vs ' + state_name + ' on ' + population_subset + ' sentencing'
+    ttl = section_name +' vs ' + larger_group_name + ' on ' + population_subset + ' sentencing' +'.  N=' + str(count)
     plt.title(ttl)
     plt.legend()
     
@@ -340,13 +343,15 @@ def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, col
         plt.plot(x_data, diffs[dep_type], '-o',
             color = colors[dep_type], label = order_of_outputs[dep_type])
     plt.axhline(y=0, color = 'black')
-    ttl = section_name +' vs ' + state_name + ' differences on ' + population_subset + ' sentencing'
+    ttl = section_name +' vs ' + larger_group_name + ' ' +  ' differences on ' + population_subset + ' sentencing'
     plt.title(ttl)
     plt.legend()
     
 
-def plot_section_and_rest_data(x_data,section_y_data,rest_y_data, colors,
-                               population_subset,order_of_outputs, section_name, state_name):
+def plot_section_and_rest_data(x_data, section_y_data, rest_y_data, count, 
+                               colors, population_subset,order_of_outputs, 
+                               section_name, section_category_name,
+                               larger_group_name, larger_group_category_name):
     
     section_y_data_medians = np.median(section_y_data, axis = 1)
     rest_y_data_medians = np.median(rest_y_data, axis = 1)
@@ -355,11 +360,13 @@ def plot_section_and_rest_data(x_data,section_y_data,rest_y_data, colors,
     comb_min = np.min([np.min(section_y_data_medians), np.min(rest_y_data_medians)])
     
     if comb_max-comb_min > 0.5:
-        section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data, colors,
-                                       population_subset, order_of_outputs, section_name, state_name)
+        section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data,count,  colors,
+                                       population_subset, order_of_outputs, section_name, section_category_name,
+                                       larger_group_name, larger_group_category_name)
     else:
-        section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, colors,
-                                       population_subset,order_of_outputs, section_name, state_name)
+        section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, count, colors,
+                                       population_subset,order_of_outputs, section_name, section_category_name,
+                                       larger_group_name, larger_group_category_name)
     
     
     
