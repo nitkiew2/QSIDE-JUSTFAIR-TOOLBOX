@@ -177,7 +177,7 @@ def subset_data_multi_level_summary(stateobj, subset_dat, base_group_str, inp_li
     return comb_df
 
 
-def compare_section_to_larger_group(stateobj, section_category_name, section_name,
+def tb_compare_section_to_larger_group(stateobj, section_category_name, section_name,
                                     larger_group_category_name, larger_group_name,
                                     inp_list_of_groups = ['departure'], years=None, plot=True):
     """

@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from JUSTFAIR_Tools.toolbox import subset_data_multi_level_summary, filter_years
+from JUSTFAIR_Tools.toolbox import subset_data_multi_level_summary, filter_years, tb_compare_section_to_larger_group
 from JUSTFAIR_Tools.plotting import plot_section_vs_state, plot_section_vs_state_trends, plot_section_and_rest_data
 
 ### State class
@@ -70,7 +70,20 @@ class State:
             self.yearly_average_percents[year] = percentages
 
 
-            
+### List Paths
+    def list_paths(self):
+         """
+         print the paths of a state.  These are acceptable entries for inp_list_of_groups
+
+         Returns
+         -------
+         None.
+
+         """
+         for key in self.paths.keys():
+             print(key)
+             
+             
 ### Generalizable Multi-Level Summary
 
     def generalizable_multi_level_summary(self, inp_list_of_groups = ['departure'], years = None, plot = 'stacked bar'):
@@ -158,160 +171,96 @@ class State:
 
 
 
-### Individual Section Analysis
-
-    def individual_section_analysis_v2(self, category_name, section_name, inp_list_of_groups = ['departure'], years = None, plot = True):
-        '''
-        Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
-
-        Parameters:
-            stateobj: a state object
-            section_name: name of the judge, for formatting the title
-            inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
-            years: the specified years.  Either a range or none
-            plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
-
-        Returns:
-            Plots of subset of specified data for judges sentencing length
-        '''
-        section_filtered_data = self.data[self.data[self.paths[category_name].df_colname]== section_name]
-        rest_of_the_state = self.data[self.data[self.paths[category_name].df_colname]!= section_name]
-        # get the years where the judge was active
-        overlapping_years = years
-        if years is None:
-            overlapping_years = np.sort(section_filtered_data[self.paths['year'].df_colname].unique())
-        print(section_name, 'was active in the years:', overlapping_years)
-
-        groups_to_filter_by = []  # this list keeps track of the column names in our stateobj.data we are grouping by
-        # get the column names in our stateobj.data we are grouping by
-        total_number_of_subgroups = 1
-        for group in inp_list_of_groups:
-            groups_to_filter_by.append(self.paths[group].df_colname)
-            total_number_of_subgroups = total_number_of_subgroups * len(self.paths[group].levels) # i.e, if race has 5 levels, sex has 2, this should be 10
-        
-        #compare the whole stretch of years
-        
-        
-        
-        #first, filter for the span of years we are looking at
-        section_filtered_data = section_filtered_data[section_filtered_data[self.paths['year'].df_colname].isin(overlapping_years)]
-        rest_of_the_state = rest_of_the_state[rest_of_the_state[self.paths['year'].df_colname].isin(overlapping_years)]
-        
-        
-        #now, we call subset data analysis to get 
-        section_allyr_stats = subset_data_multi_level_summary(self, section_filtered_data, section_name, inp_list_of_groups, plot = None)
-        rest_allyr_stats = subset_data_multi_level_summary(self, rest_of_the_state, self.name, inp_list_of_groups, plot = None)
-        
-        
-        #build unique tuples list
-        unique_identifiers = []  # list of unique tuples in df.index we will need
-        unique_identifier_strings = []  # string fromat of unique_identifiers, used in graph titles.
-        
-        if  rest_allyr_stats.index.nlevels > 1:
-            for ind in rest_allyr_stats.index:
-                if ind[:-1] not in unique_identifiers:  # we do ind[:-1] here because the last identifier is always departure, and we want our grops to be everything but departure 
-                    unique_identifiers.append(ind[:-1])  # add the unique identifier tuple
-                    # create and add string form of the unique identifier to unique_identifier_strings
-                    unique_identifier_string = ''
-                    for string in ind[:-1]:
-                        unique_identifier_string += str(string) + ' '
-                    unique_identifier_string = unique_identifier_string[:-1]
-                    unique_identifier_strings.append(unique_identifier_string)
-                    
-            for unique_id in unique_identifiers:
-                print('Looking at',section_name, 'vs', self.name, 'for', unique_id,'s')
-                for departure_type in self.order_of_outputs:
-                    loc_id = unique_id + (departure_type,)
-                    if loc_id in section_allyr_stats.index and loc_id in rest_allyr_stats.index:
-                        if section_allyr_stats.loc[loc_id, 'percent'] > 1.05 * rest_allyr_stats.loc[loc_id, 'percent']:
-                            print(section_name, category_name,'currently has an average', departure_type, 'rate above state average in years queried')
-                        elif section_allyr_stats.loc[loc_id, 'percent'] < 0.95 * rest_allyr_stats.loc[loc_id, 'percent']:
-                            print(section_name, category_name,'currently has an average', departure_type, 'rate below state average in years queried')
-                        else: 
-                            print(section_name, category_name,'currently has an average', departure_type, 'rate about at state average in years queried')
-
-        else:
-            unique_identifier_strings = [self.name]
-            print('Looking at',section_name, 'vs', self.name,'all')
-            for departure_type in self.order_of_outputs:
-                if departure_type in section_allyr_stats.index and departure_type in rest_allyr_stats.index:
-                    if section_allyr_stats.loc[departure_type, 'percent'] > 1.05 * rest_allyr_stats.loc[departure_type, 'percent']:
-                        print(section_name, category_name,'currently has an average', departure_type, 'rate above state average in years queried')
-                    elif section_allyr_stats.loc[departure_type, 'percent'] < 0.95 * rest_allyr_stats.loc[departure_type, 'percent']:
-                        print(section_name, category_name,'currently has an average', departure_type, 'rate below state average in years queried')
-                    else: 
-                        print(section_name, category_name,'currently has an average', departure_type, 'rate about at state average in years queried')
-
-        #  now we get the data for graphing: multiple levels in inp_list_of_groups
-        if rest_allyr_stats.index.nlevels > 1:
-            #  now we create the data for the by year graphs
-            years_lst = []  #list of lists for each year we will append a lis tof [year, section_breakdown, rest_breakdown]
-            ret_pandas_data = {}
-            
-            for year in overlapping_years:
-                #  first, filter our data for the year we want
-                year_section_data = section_filtered_data[section_filtered_data[self.paths['year'].df_colname]==year]
-                year_rest_of_state_data = rest_of_the_state[rest_of_the_state[self.paths['year'].df_colname]==year]
-                
-                #  now we group by to get section breakdowns
-                year_section_breakdown = subset_data_multi_level_summary(self, year_section_data, section_name, inp_list_of_groups, plot = None)
-                year_restof_breakdown = subset_data_multi_level_summary(self, year_rest_of_state_data, self.name, inp_list_of_groups, plot = None)
+    ### Individual Section Analysis
+    def compare_section_to_larger_group(self, section_category_name, section_name,
+                                        larger_group_category_name, larger_group_name,
+                                        inp_list_of_groups = ['departure'], years=None, plot=True):
+        """
+        Compare a subsection to its larger whole.  Note, the larger group must have 
     
+        Parameters
+        ----------
+        section_category_name : str
+            state the paths name that is the category our section is in.  ex: judge, county, district.
+        section_name : str
+            the name of the section we are looking at.
+        larger_group_category_name : str
+            the paths name of the category for the larger group.  Ex: county, district, state.
+        larger_group_name : str
+            name of the larger group.  For this tto work, the section must be a 
+            subsection of this larger group.
+        inp_list_of_groups : list, optional
+            list paths names you wish to group by. The default is ['departure'].
+        years : list, optional
+            specify a range of years to look at. The default is None, and if None 
+            is specified, it will pull all eyars where data is available.
+        plot : bool, optional
+            flag for if the function should generate graphs. The default is True.
     
-                section_data = np.zeros((len(self.order_of_outputs), len(unique_identifiers)))
-                rest_of_data = np.zeros((len(self.order_of_outputs), len(unique_identifiers)))
-                
-                for dep in range(len(self.order_of_outputs)):
-                    for unique_id in range(len(unique_identifiers)):
-                        loc_id = unique_identifiers[unique_id] + (self.order_of_outputs[dep],)
-                        if loc_id in year_section_breakdown.index:
-                            section_data[dep, unique_id] = year_section_breakdown.loc[loc_id,'percent']
-                        if loc_id in year_restof_breakdown.index:
-                            rest_of_data[dep, unique_id] = year_restof_breakdown.loc[loc_id,'percent']
+        Returns
+        a pandas datraframe of the following format:
+            df[year][section] = section data for that yeat, has percent and count
+            df[year][rest] = data for the year ofr the larger section
     
-                years_lst.append([year, section_data, rest_of_data])
-                ret_pandas_data[year] = [year_section_breakdown, year_restof_breakdown]
+        """
+        return tb_compare_section_to_larger_group(self, section_category_name, section_name,
+                                            larger_group_category_name, larger_group_name,
+                                            inp_list_of_groups, years, plot)
                 
-            #  now it's time to make graphs
-            
-            for unique_id in range(len(unique_identifiers)):
-                section_y_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
-                rest_y_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
-                for year in range(len(years_lst)):
-                    for departure_type in range(len(self.order_of_outputs)):
-                        section_y_data[departure_type][year] = years_lst[year][1][departure_type][unique_id]
-                        rest_y_data[departure_type][year] = years_lst[year][2][departure_type][unique_id]
-                if plot:
-                    print('plotting')
-                    plot_section_and_rest_data(overlapping_years,section_y_data,rest_y_data, self.colors, 
-                                               unique_identifier_strings[unique_id], self.order_of_outputs, section_name, self.name)
-            return ret_pandas_data     
-
-        else:  # this is if we are only grouping by departure
-            section_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
-            rest_of_data = np.zeros((len(self.order_of_outputs), len(overlapping_years)))
-            
-            for year in range(len(overlapping_years)):
-                year_section_data = section_filtered_data[section_filtered_data[self.paths['year'].df_colname]==overlapping_years[year]]
-                year_rest_of_state_data = rest_of_the_state[rest_of_the_state[self.paths['year'].df_colname]==overlapping_years[year]]
-                
-                #  now we group by to get section breakdowns
-                year_section_breakdown = subset_data_multi_level_summary(self, year_section_data, section_name, inp_list_of_groups, plot = None)
-                year_restof_breakdown = subset_data_multi_level_summary(self, year_rest_of_state_data, self.name, inp_list_of_groups, plot = None)
-                
-                for dep_type in range(len(self.order_of_outputs)):
-                    if self.order_of_outputs[dep_type] in year_section_breakdown.index:
-                        section_data[dep_type, year] = year_section_breakdown.loc[self.order_of_outputs[dep_type],'percent']
-                    if self.order_of_outputs[dep_type] in year_restof_breakdown.index:
-                        rest_of_data[dep_type, year] = year_restof_breakdown.loc[self.order_of_outputs[dep_type],'percent']
-            if plot:
-                print('plotting')
-                plot_section_and_rest_data(overlapping_years,section_data,rest_of_data, self.colors, 
-                                           'all', self.order_of_outputs, section_name, self.name)
-            return section_allyr_stats, rest_allyr_stats
-            
-
-
-
+    
+    def compare_judge_to_county(self, judge_name, county_name,
+                                        inp_list_of_groups = ['departure'], years=None, plot=True):
+        """
+        Compare a judge to a county they operate in. 
+    
+        Parameters
+        ----------
+        section_name : str
+            the name of the judge we are looking at.
+        larger_group_name : str
+            name of the county.  For this tto work, the judge must be active in this county.
+        inp_list_of_groups : list, optional
+            list paths names you wish to group by. The default is ['departure'].
+        years : list, optional
+            specify a range of years to look at. The default is None, and if None 
+            is specified, it will pull all eyars where data is available.
+        plot : bool, optional
+            flag for if the function should generate graphs. The default is True.
+    
+        Returns
+        a pandas datraframe of the following format:
+            df[year][section] = section data for that yeat, has percent and count
+            df[year][rest] = data for the year ofr the larger section
+    
+        """
+        return tb_compare_section_to_larger_group(self, 'judge', judge_name,
+                                            'county', county_name,
+                                            inp_list_of_groups, years, plot)
+    
+    def compare_judge_to_state(self, judge_name, inp_list_of_groups = ['departure'], years=None, plot=True):
+        """
+        Compare a judge to a state they operate in. 
+    
+        Parameters
+        ----------
+        section_name : str
+            the name of the judge we are looking at.
+        inp_list_of_groups : list, optional
+            list paths names you wish to group by. The default is ['departure'].
+        years : list, optional
+            specify a range of years to look at. The default is None, and if None 
+            is specified, it will pull all eyars where data is available.
+        plot : bool, optional
+            flag for if the function should generate graphs. The default is True.
+    
+        Returns
+        a pandas datraframe of the following format:
+            df[year][section] = section data for that yeat, has percent and count
+            df[year][rest] = data for the year ofr the larger section
+    
+        """
+        return tb_compare_section_to_larger_group(self, 'judge', judge_name,
+                                            'state', self.name,
+                                            inp_list_of_groups, years, plot)
 
         
