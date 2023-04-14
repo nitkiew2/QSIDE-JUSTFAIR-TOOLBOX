@@ -44,3 +44,8 @@ vignettes/*.pdf
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+.DS_Store
+
+__pycache__/
+
