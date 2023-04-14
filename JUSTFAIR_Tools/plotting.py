@@ -104,9 +104,9 @@ def plot_departures_stacked(x_values_list, y_values_list, colors, base_group_str
         b += y_values_list[i]
     ax.set_xlabel('Percentage')
     ax.set_xlim((-5,105))
-    ttl = 'Proportional sentences for '+ base_group_str[0] + ' ' + subgroup_str
+    ttl = 'Proportional sentences for '+ base_group_str + ' ' + subgroup_str
     ax.set_title(ttl)
-    ax.legend(bbox_to_anchor = (1.45, 0.6), loc='center right')
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 
     # For each patch (basically each rectangle within the bar), add a label.
@@ -282,8 +282,8 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
                      color = colors[dep_type], label = lab)
     
     # zoom-in / limit the view to different portions of the data
-    top.legend()
-    bot.legend()
+    top.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    bot.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     top.set_ylim(upper_min*0.95, np.max([upper_max*1.05,1]))  # top section
     bot.set_ylim(lower_min*0.95, lower_max*1.05)  #bottom section
     
@@ -317,7 +317,7 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
     plt.axhline(y=0, color = 'black')
     ttl = section_name +' vs ' + larger_group_name + ' differences on ' + population_subset + ' sentencing'
     plt.title(ttl)
-    plt.legend()
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         
 
 def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, count, colors,
@@ -335,7 +335,7 @@ def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, cou
     
     ttl = section_name +' vs ' + larger_group_name + ' on ' + population_subset + ' sentencing' +'.  N=' + str(count)
     plt.title(ttl)
-    plt.legend()
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     
     plt.figure()
     diffs = section_y_data - rest_y_data
@@ -345,7 +345,7 @@ def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, cou
     plt.axhline(y=0, color = 'black')
     ttl = section_name +' vs ' + larger_group_name + ' ' +  ' differences on ' + population_subset + ' sentencing'
     plt.title(ttl)
-    plt.legend()
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     
 
 def plot_section_and_rest_data(x_data, section_y_data, rest_y_data, count, 
