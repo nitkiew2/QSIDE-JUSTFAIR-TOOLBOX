@@ -42,10 +42,11 @@ vignettes/*.pdf
 # csv data
 .csv
 
-# Jupyter Notebook
+# Jupyter Notebook / python
 .ipynb_checkpoints
 
 .DS_Store
 
 __pycache__/
 
+.idea
