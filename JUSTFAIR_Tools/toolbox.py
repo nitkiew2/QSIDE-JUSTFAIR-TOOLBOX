@@ -35,9 +35,9 @@ def filter_years(stateobj, years):
 ### Plotting Data
 
 def plot_df(stateobj, df, plot_type, groups, base_group_str):
-    '''
+    """
     Main plotting function.  This is used by generalizable_multi_level_summary to take a dataframe and generate 
-    graphs by calling plot_departures or plot_departures_stacked.
+    graphs by calling plot_departures, plot_departures_pie, or plot_departures_stacked.
 
     we have 6 main situations here
     1. stacked bar, just departure to group by
@@ -53,14 +53,27 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
 
     Using this data, it creates the desired plots for the user to view
 
-    Parameters:
-        df: input dataframe.  Right now we are using percents from generalizable_multi_level_summary
-        stacked: if true, produce stacked bar graphs, if false, produce nonstacked bar graphs
-        groups: the parameters we are grouping by, we use these to generate titles in stacked bar graphs
 
-    Returns:
-        Plots based off the plot type, basic plotting function
-    '''
+    Parameters
+    ----------
+    stateobj : Statelass object
+        the state class object in question.
+    df : pandas DataFrame
+        dataframe holding the percents for each category.
+    plot_type : string
+        specifies which plot to generate.
+    groups : list
+        this is a list of areas we are grouping by, excluding departure.  for example, if in 
+        GMLS, the inp_list_of_groups = ['sex','departure'], groups would just be ['sex']
+    base_group_str : string
+        the base group for which we are analyzing. for generalizable MLS, this is usually the state's name
+
+    Returns
+    -------
+    None.
+
+    """
+
     unique_identifiers = []  # list of unique tuples in df.index we will need
     unique_identifier_strings = []  # string fromat of unique_identifiers, used in graph titles.
     if  df.index.nlevels > 1:
@@ -182,6 +195,8 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                                     inp_list_of_groups = ['departure'], years=None, plot=True):
     """
     Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
+    the reason we have tb_ in front is so we can differentiate this function from the function in the state 
+    class that calls it.
 
     Parameters:
         stateobj: a state object
@@ -194,7 +209,9 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
         plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
 
     Returns:
-        Plots of subset of specified data for judges sentencing length
+        dictionary:
+            this dictionary has the following format
+            dict[year]
     """
     section_filtered_data = stateobj.data[stateobj.data[stateobj.paths[section_category_name].df_colname] == section_name]
     rest_of_the_larger_section = None
