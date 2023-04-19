@@ -14,20 +14,27 @@ from JUSTFAIR_Tools.plotting import plot_departures_bar, plot_departures_stacked
 ### Filter Years
 
 def filter_years(stateobj, years):
-    '''
+    """
+    Simple funciton to filter a states data for a set of years
     Every funciton has a years to filter parameter, so we are building a function here because:
     1.  if we have to edit it, we only have to edit it here
     2.  saves us time from rewriting this a bunch
 
-    Parameters:
-        stateobj: a state object
-        years: the specified years.  Either a range or none
+    Parameters
+    ----------
+    stateobj : State 
+        state object who's data we are returning a subset of.
+    years : list
+        list of years to filter for.
 
-    Returns:
-        a subset of the specified years of data
-    '''
+    Returns
+    -------
+    subset_dat : pandas DataFrame
+        state data filtered for al years in the years list.
+
+    """
     subset_dat = stateobj.data
-    if years is not None:  
+    if years is not None:  # if yers is none, just return the whole set
         # if the user specifies a year range, filter the data for those years
         subset_dat = stateobj.data[stateobj.data[stateobj.paths['year'].df_colname].isin(years)]
     return subset_dat
@@ -194,25 +201,55 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                                     larger_group_category_name, larger_group_name,
                                     inp_list_of_groups = ['departure'], years=None, plot=True):
     """
-    Outputs bar graph, stacked bar graph, and line graph of a Judges sentencing length over specified years
-    the reason we have tb_ in front is so we can differentiate this function from the function in the state 
-    class that calls it.
+    Compares the sentencing rates of a smaller piece of a group to the rest of its cohort.
+    NOTE: this only works if the section is a subsection fo the larger group.  FUTURE WORK, use a GUI to lock off options that wouldn't work
+    
+    Breakdown of steps in this function
+    1. get the years where the seciton and larger group both have data.  Filter it for those years
+    2. separate out the section  data and the larger group data.  the larger group is referred to as larger gorup or the rest
+    3. get the overall stats for both groups, format data with paths
+    4. compare the rates (percentages) of sentencing for each unique identifier in our inp_list_of_groups levels (ex: males (race), white females (race, sex) )
+    5. collect the sentencing rates for the section and larger group, for each year
+    6. plot the results and return data
+    
+    FUTURE imporvements:
+        right now everything depends on the unique_identifiers, which in theory 
+        is ok because in theory the larger section should always have more 
+        categories than the subsection should have, but redoing this to include 
+        all possible subcategories might be good for robustness in the future
 
-    Parameters:
-        stateobj: a state object
-        section_category_name: the name of the category our section belongs to.  Examples: judge, district, county
-        section_name: name of the judge, for formatting the title
-        larger_group_category_name: the category of our larger group that we are comparing the section to.  Examples: District, county, State
-        larger_group_name: name of the larger group
-        inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
-        years: the specified years.  Either a range or none
-        plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
+    Parameters
+    ----------
+    stateobj : State
+        the state we are pulling data from .
+    section_category_name : string
+        the category that our section is, and MUST be in stateobj.paths.  Some examples might be judge, county, or district.
+    section_name : string
+        the specific name of the seciton we are looking at.
+    larger_group_category_name : string
+        the category that our largewr group is, and MUST be in stateobj.paths.  Some examples might be county, district, or state.
+    larger_group_name : string
+        name of the larger group we are looking at.
+    inp_list_of_groups : list, optional
+        factors / paths we want to group by for this analysis. The default is ['departure'].
+    years : list, optional
+        list of yeras to analyze. The default is None / all years.  
+        NOTE, years will already be filtered for only where overlapping data
+        exists, but if you'd like to filter it more, you can.  FUTURE WORK, when
+        selecting year ranges, use a GUI to lock out options that would elave the 
+        overlapping years to be none.
+    plot : bool, optional
+        specifies if you want plots to be generated. The default is True.
 
-    Returns:
-        dictionary:
-            this dictionary has the following format
-            dict[year]
+    Returns
+    -------
+    a pandas datraframe of the following format:
+        df[year]['section'] = section data for that yeat, has percent and count
+        df[year]['rest'] = data for the year ofr the larger section
+
     """
+
+    ### 1. get the years where the seciton and larger group both have data.  Filter it for those years
     section_filtered_data = stateobj.data[stateobj.data[stateobj.paths[section_category_name].df_colname] == section_name]
     rest_of_the_larger_section = None
     if larger_group_category_name not in stateobj.paths.keys():  # if we're dealing with 'state' or there's a typo
@@ -238,12 +275,13 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
         groups_to_filter_by.append(stateobj.paths[group].df_colname)
         total_number_of_subgroups = total_number_of_subgroups * len(stateobj.paths[group].levels)  # i.e, if race has 5 levels, sex has 2, this should be 10
 
-    # compare the whole stretch of years
-
+    
+    ### 2. separate out the section  data and the larger group data.  the larger group is referred to as larger gorup or the rest
     # first, filter for the span of years we are looking at
     section_filtered_data = section_filtered_data[section_filtered_data[stateobj.paths['year'].df_colname].isin(overlapping_years)]
     rest_of_the_larger_section = rest_of_the_larger_section[rest_of_the_larger_section[stateobj.paths['year'].df_colname].isin(overlapping_years)]
 
+    ### 3. get the overall stats for both groups, format data with paths
     # now, we call subset data analysis to get
     section_allyr_stats = subset_data_multi_level_summary(stateobj, section_filtered_data,
                                                           section_name, inp_list_of_groups, plot=None)
@@ -251,13 +289,15 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                                                        larger_group_name, inp_list_of_groups, plot=None)
 
     # build unique tuples list
+    # each tuple will be a 'unique identifier', basically refers to a combination of subgroups
+    # for example, if inp_list_of_groups = ['race','sex','departure'] a unique ID would be ('white', 'female')
+    # and a unique_identifier_string would be 'white female'
     unique_identifiers = []  # list of unique tuples in df.index we will need
     unique_identifier_strings = []  # string format of unique_identifiers, used in graph titles.
 
     if rest_allyr_stats.index.nlevels > 1:  # if we are grouping by variables other than departure
         for ind in rest_allyr_stats.index:
-            if ind[
-               :-1] not in unique_identifiers:  # we do ind[:-1] here because the last identifier is always departure, and we want our grops to be everything but departure
+            if ind[:-1] not in unique_identifiers:  # we do ind[:-1] here because the last identifier is always departure, and we want our groups to be everything but departure
                 unique_identifiers.append(ind[:-1])  # add the unique identifier tuple
                 # create and add string form of the unique identifier to unique_identifier_strings
                 unique_identifier_string = ''
@@ -265,7 +305,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                     unique_identifier_string += str(string) + ' '
                 unique_identifier_string = unique_identifier_string[:-1]
                 unique_identifier_strings.append(unique_identifier_string)
-
+        ### 4. compare the rates (percentages) of sentencing for each unique identifier in our inp_list_of_groups levels (ex: males (race), white females (race, sex) )
         for unique_id in unique_identifiers:
             print('Looking at', section_name, 'vs', stateobj.name, 'for', unique_id, 's')
             for departure_type in stateobj.order_of_outputs:
@@ -280,7 +320,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                     else:
                         print(section_name, section_category_name, 'currently has an average', departure_type,
                               'rate about at', larger_group_name,  larger_group_category_name,'average in years queried')
-
+     ### 4. compare the rates (percentages) of sentencing for each level of departure (this is the scenario where just departure is selected)
     else:
         unique_identifier_strings = [stateobj.name]
         print('Looking at', section_name, 'vs', stateobj.name, 'all')
@@ -298,11 +338,12 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                     print(section_name, section_category_name, 'currently has an average', departure_type,
                           'rate about at', larger_group_name,  larger_group_category_name,'average in years queried')
 
+    ### 5. collect the sentencing rates for the section and larger group, for each year
     #  now we get the data for graphing: multiple levels in inp_list_of_groups
     if rest_allyr_stats.index.nlevels > 1:
         #  now we create the data for the by year graphs
-        years_lst = []  # list of lists for each year we will append a lis tof [year, section_breakdown, rest_breakdown]
-        ret_pandas_data = {}
+        years_lst = []  # list of lists for each year we will append a list tof [year, section_breakdown, rest_breakdown]
+        ret_pandas_data = {}  # pandas dataframe to return.  For format, see function header / documentation
 
         for year in overlapping_years:
             #  first, filter our data for the year we want
@@ -314,12 +355,15 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                                                                      inp_list_of_groups, plot=None)
             year_restof_breakdown = subset_data_multi_level_summary(stateobj, year_rest_of_larger_data, larger_group_name,
                                                                     inp_list_of_groups, plot=None)
-
-            section_data_percents = np.zeros((len(stateobj.order_of_outputs), len(unique_identifiers)))
+            # we need an np array for bor the section and the rest for each year, in the shape of (levels in departure * number of unique identifiers)
+            # addiitonally, the counts are also collected, but currently unused.  Potential for year by year chi squared testing, but counts may  be too low
+            # to obtain useful results
+            section_data_percents = np.zeros((len(stateobj.order_of_outputs), len(unique_identifiers)))  
             rest_of_data_percents = np.zeros((len(stateobj.order_of_outputs), len(unique_identifiers)))
             section_data_counts = np.zeros((len(stateobj.order_of_outputs), len(unique_identifiers)))
             rest_of_data_counts = np.zeros((len(stateobj.order_of_outputs), len(unique_identifiers)))
 
+            # use for index in range because for all arrays the percents will be matching
             for dep in range(len(stateobj.order_of_outputs)):
                 for unique_id in range(len(unique_identifiers)):
                     loc_id = unique_identifiers[unique_id] + (stateobj.order_of_outputs[dep],)
@@ -338,7 +382,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
             ret_pandas_data[year] = {'section': year_section_breakdown, 'rest': year_restof_breakdown}
 
         #  now it's time to make graphs
-
+        
         for unique_id in range(len(unique_identifiers)):
             section_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
             rest_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
@@ -349,6 +393,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                     section_y_data[departure_type][year] = years_lst[year]['section_percents'][departure_type][unique_id]
                     rest_y_data[departure_type][year] = years_lst[year]['rest_percents'][departure_type][unique_id]
                     section_y_counts[departure_type][year] = years_lst[year]['section_counts'][departure_type][unique_id]
+            ### 6. plot the results and return data
             if plot:
                 section_count = np.sum(section_y_counts)
                 plot_section_and_rest_data(overlapping_years, section_y_data, rest_y_data, section_count, 
@@ -357,7 +402,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                                            larger_group_name, larger_group_category_name)
                 
         return ret_pandas_data
-
+    ### 5. collect the sentencing rates for the section and larger group, for each year.  This is for just departure selected
     else:  # this is if we are only grouping by departure
         section_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
         rest_y_data = np.zeros((len(stateobj.order_of_outputs), len(overlapping_years)))
@@ -373,7 +418,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
             year_restof_breakdown = subset_data_multi_level_summary(stateobj, year_rest_of_larger_data, stateobj.name,
                                                                     inp_list_of_groups, plot=None)
 
-            for dep_type in range(len(stateobj.order_of_outputs)):
+            for dep_type in range(len(stateobj.order_of_outputs)):  
                 if stateobj.order_of_outputs[dep_type] in year_section_breakdown.index:
                     section_y_data[dep_type, year] = year_section_breakdown.loc[
                         stateobj.order_of_outputs[dep_type], 'percent']
@@ -381,6 +426,7 @@ def tb_compare_section_to_larger_group(stateobj, section_category_name, section_
                         stateobj.order_of_outputs[dep_type], 'count']
                 if stateobj.order_of_outputs[dep_type] in year_restof_breakdown.index:
                     rest_y_data[dep_type, year] = year_restof_breakdown.loc[stateobj.order_of_outputs[dep_type], 'percent']
+        ### 6. plot the results and return data
         if plot:
             section_count = np.sum(section_y_counts)
             plot_section_and_rest_data(overlapping_years, section_y_data, rest_y_data, section_count, 
