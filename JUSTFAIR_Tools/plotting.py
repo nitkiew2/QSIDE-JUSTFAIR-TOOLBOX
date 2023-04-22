@@ -2,7 +2,7 @@
 """
 Created on Thu Mar 16 17:39:23 2023
 
-@author: jason
+@author: MSU QSIDE JUSTFAIR 2023 Team
 """
 
 import matplotlib.pyplot as plt
@@ -150,88 +150,6 @@ def plot_departures_stacked(x_values_list, y_values_list, colors, base_group_str
               weight='bold',
               size=11)
 
-### Judge vs State Bar Graph
-
-def plot_section_vs_state(order_of_outputs, section_averages, state_avg_for_years, section_name, statename):
-    '''
-    Plots a comparison horizontal bar graph comparing the state to the judge in question.
-
-    Parameters:
-        order_of_outputs: a state objects order_of_outputs variable, used to deterimine the order of bars on the chart
-        section_averages: the judge's averages.  In the shape of 1 x (length of order of outputs)
-        state_avg_for_years: the state's averages.  In the shape of 1 x (length of order of outputs)
-        section_name: name of the judge, for formatting the title
-        statename: name of the state, for formatting the title
-
-    Returns:
-        Bar plot of the justice sentencing based on input parameter criteria
-    '''
-    x = np.arange(len(order_of_outputs))
-    y_data = {}
-    y_data[section_name] = section_averages
-    y_data[statename] = state_avg_for_years
-
-    width = 0.35
-    multiplier = 0
-
-    bar_colors = ['lightcoral', 'lightgrey', 'cornflowerblue', 'turquoise']
-
-    fig, ax = plt.subplots(figsize = (10,7))
-
-    for attribute, measurement in y_data.items():
-        offset = width * multiplier
-        rects = ax.barh(x + offset, measurement, width, label=attribute, color = bar_colors, edgecolor='black')
-        ax.bar_label(rects, padding=3, fmt='%.2f%%' + '   ('+ attribute+')')
-        multiplier += 1
-
-    # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_xlabel('percentage (%)')
-    ttl = 'Comparing ' + section_name + ' sentencing to ' + statename + ' sentencing'
-    ax.set_title(ttl)
-    ax.set_yticks(x + width/2)
-    ax.set_yticklabels(order_of_outputs)
-    ax.set_xlim(0, 119)
-
-### Judge vs State Line Graph
-
-def plot_section_vs_state_trends(stateobj, overlapping_years, section_data_y, state_data_y, section_name):
-    '''
-    Plots a line graphs comparing the state to the judge in question.
-
-    Parameters:
-        stateobj:  A state object.  Used to access the state's anme and order of outputs.
-        ovarlapping years:  The years that the judge worked (whaich years of the state's data did the judge work in?)
-        section_data_y: the section's averages.  In the shape of (number of overlapping years) x (length of order of outputs)
-        state_data_y: the state's averages.  In the shape of (number of overlapping years) x (length of order of outputs)
-        section_name: name of the judge, for formatting the title
-
-    Returns:
-        Line graph of the justice sentencing based on input parameter criteria
-    '''
-    colors = ['lightcoral', 'lightgrey', 'cornflowerblue', 'turquoise']
-
-    for col in range(len(stateobj.order_of_outputs)):
-        fig, ax = plt.subplots(figsize=(10, 7))
-        ax.plot(overlapping_years, section_data_y[:,col], '-o', label=section_name, color = colors[col])
-        ax.plot(overlapping_years, state_data_y[:,col], '--o', label=stateobj.name, color = colors[col])
-        ttl = 'Comparing ' + section_name + ' and' + stateobj.name + ' on ' + stateobj.order_of_outputs[col]
-        ax.set_title(ttl)
-        ax.set_xlabel('year')
-        ax.set_ylabel('percentage (%)')
-        ax.legend(loc = 'upper right')
-
-
-    fig, ax = plt.subplots(figsize=(10, 7))
-    for col in range(len(stateobj.order_of_outputs)):
-        ax.plot(overlapping_years, section_data_y[:,col] - state_data_y[:,col], '-o', 
-                label=stateobj.order_of_outputs[col], color = colors[col])
-    ax.axhline(y = 0, color = 'black')
-
-    ttl = 'Comparing ' + section_name + ' difference from ' + stateobj.name + ' levels'
-    ax.set_title(ttl)
-    ax.set_xlabel('year')
-    ax.set_ylabel('percentage (%)')
-    ax.legend(loc = 'upper right')
     
 
     
@@ -239,6 +157,46 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
                                                       colors,population_subset, order_of_outputs, 
                                                       section_name, section_category_name,
                                                       larger_group_name, larger_group_category_name):
+    """
+    Plot the sentencing trends for a unique identifier for both a section and a larger group.
+    
+    Creates two graphs:
+        the top graph will plot the trends for the section and the rest over time
+            this will be a split axis graph
+        the bottom graph shows the section vs larger group differeence (section - rest)
+
+    Parameters
+    ----------
+    x_data : list
+        the overlapping year data between the section and the rest of the larger section it is aprt of.
+    section_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the section's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    rest_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the larger group's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    count : int
+        the total number of people sentenced for this unique identifier.
+    colors : list
+        DESCRIPTION.
+    population_subset : string
+        the name of the unique identifier.  for example 'white female'
+    order_of_outputs : list
+        a state object's order of outputs.
+    section_name : string
+        the name of the section being analyzed.
+    section_category_name : string
+        the name of the category the section is a part of.  MUST be in the satate's paths.
+    larger_group_name : string
+        the name of the larger group in the analysis.
+    larger_group_category_name : string
+        the category of the larger group.
+
+    Returns
+    -------
+    None.
+
+    """
     
     # seeing which row goes on the top graph
     section_y_data_medians = np.median(section_y_data, axis = 1)
@@ -308,7 +266,7 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
     fig.suptitle(ttl)
     
     
-    #second graph, differences (judge data - rest of data, so if judge is higher we see a positive number)
+    #second graph, differences (section data - rest of data, so if judge is higher we see a positive number)
     plt.figure(figsize = (10,4))
     diffs = section_y_data - rest_y_data
     for dep_type in range(len(order_of_outputs)):
@@ -320,9 +278,50 @@ def section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, res
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         
 
-def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, count, colors,
-                               population_subset,order_of_outputs, section_name, section_category_name,
-                               larger_group_name, larger_group_category_name):
+def section_and_rest_data_plot_line_graph(x_data,section_y_data,rest_y_data, count, 
+                                          colors, population_subset,order_of_outputs, 
+                                          section_name, section_category_name,
+                                          larger_group_name, larger_group_category_name):
+    """
+    Plot the sentencing trends for a unique identifier for both a section and a larger group.
+    
+    Creates two graphs:
+        the top graph will plot the trends for the section and the rest over time
+            this will be one single, normal plot
+        the bottom graph shows the section vs larger group differeence (section - rest)
+
+    Parameters
+    ----------
+    x_data : list
+        the overlapping year data between the section and the rest of the larger section it is aprt of.
+    section_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the section's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    rest_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the larger group's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    count : int
+        the total number of people sentenced for this unique identifier.
+    colors : list
+        DESCRIPTION.
+    population_subset : string
+        the name of the unique identifier.  for example 'white female'
+    order_of_outputs : list
+        a state object's order of outputs.
+    section_name : string
+        the name of the section being analyzed.
+    section_category_name : string
+        the name of the category the section is a part of.  MUST be in the satate's paths.
+    larger_group_name : string
+        the name of the larger group in the analysis.
+    larger_group_category_name : string
+        the category of the larger group.
+
+    Returns
+    -------
+    None.
+
+    """
     plt.figure()
     for dep_type in range(len(order_of_outputs)):
         lab = section_name + ' ' + order_of_outputs[dep_type]
@@ -352,6 +351,46 @@ def plot_section_and_rest_data(x_data, section_y_data, rest_y_data, count,
                                colors, population_subset,order_of_outputs, 
                                section_name, section_category_name,
                                larger_group_name, larger_group_category_name):
+    """
+    Plot the sentencing trends for a unique identifier for both a section and a larger group.
+    
+    Measures the difference between the max and min values, and decides if
+    the graph should be split or not, then calls one of the two functions:
+        section_and_rest_data_plot_line_graph
+        section_and_rest_data_plot_broken_axis_line_graph
+
+    Parameters
+    ----------
+    x_data : list
+        the overlapping year data between the section and the rest of the larger section it is aprt of.
+    section_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the section's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    rest_y_data : numpy array: 2 dimensional 
+        a two dimentional list to hold the larger group's sentencing breakdown. I
+        n the shape of (length(x_data) * length(state.order_of_outputs)).
+    count : int
+        the total number of people sentenced for this unique identifier.
+    colors : list
+        DESCRIPTION.
+    population_subset : string
+        the name of the unique identifier.  for example 'white female'
+    order_of_outputs : list
+        a state object's order of outputs.
+    section_name : string
+        the name of the section being analyzed.
+    section_category_name : string
+        the name of the category the section is a part of.  MUST be in the satate's paths.
+    larger_group_name : string
+        the name of the larger group in the analysis.
+    larger_group_category_name : string
+        the category of the larger group.
+
+    Returns
+    -------
+    None.
+
+    """
     
     section_y_data_medians = np.median(section_y_data, axis = 1)
     rest_y_data_medians = np.median(rest_y_data, axis = 1)
@@ -359,7 +398,7 @@ def plot_section_and_rest_data(x_data, section_y_data, rest_y_data, count,
     comb_max = np.max([np.max(section_y_data_medians),np.max( rest_y_data_medians)])
     comb_min = np.min([np.min(section_y_data_medians), np.min(rest_y_data_medians)])
     
-    if comb_max-comb_min > 0.5:
+    if comb_max-comb_min > 0.5: # difference is big enought ot warrent a split axis graph
         section_and_rest_data_plot_broken_axis_line_graph(x_data,section_y_data, rest_y_data,count,  colors,
                                        population_subset, order_of_outputs, section_name, section_category_name,
                                        larger_group_name, larger_group_category_name)

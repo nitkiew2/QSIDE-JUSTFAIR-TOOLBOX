@@ -3,7 +3,7 @@
 """
 Created on Mon Feb 27 22:43:52 2023
 
-@author: jason
+@author: MSU QSIDE JUSTFAIR 2023 Team
 """
 
 class Path:

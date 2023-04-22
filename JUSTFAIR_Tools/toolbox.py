@@ -3,7 +3,7 @@
 """
 Created on Mon Feb 27 14:20:21 2023
 
-@author: jason
+@author: MSU QSIDE JUSTFAIR 2023 Team
 """
 import numpy as np
 import pandas as pd
@@ -80,7 +80,10 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
     None.
 
     """
-
+    #build our unique identifiers list.  FUTURE WORK: make this a function
+    # each tuple will be a 'unique identifier', basically refers to a combination of subgroups
+    # for example, if inp_list_of_groups = ['race','sex','departure'] a unique ID would be ('white', 'female')
+    # and a unique_identifier_string would be 'white female'
     unique_identifiers = []  # list of unique tuples in df.index we will need
     unique_identifier_strings = []  # string fromat of unique_identifiers, used in graph titles.
     if  df.index.nlevels > 1:
@@ -118,7 +121,7 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
     if plot_type == 'bar' or plot_type == 'pie':  # not stacked bars
         if len(groups) > 0:  #we're dealing with more then one grouping variable
             for unique_id in unique_identifiers:
-                porportions = [0,0,0,0]
+                porportions = [0] * len(stateobj.order_of_outputs)
                 pos = 0
                 for deperture_type in stateobj.order_of_outputs:
                     comb_ind = unique_id + (deperture_type,)
@@ -143,20 +146,34 @@ def plot_df(stateobj, df, plot_type, groups, base_group_str):
 ### Filtered Multilevel Summary
 
 def subset_data_multi_level_summary(stateobj, subset_dat, base_group_str, inp_list_of_groups = ['departure'], plot = 'stacked bar'):
-    '''
-    A slightly modified version of generalizable_multi_level_summary.  This is built to work with already filtered data.  
-    It is used in individual_section_analysis.
+    """
+    This function takes in some filtered data and performs the following operations:
+        group by each grouop in inp_list_of_groups
+        get output numbers dataframe
+        call plot_df to generate plots
 
-    Parameters:
-        stateobj: a state object
-        subset_dat: the subset of data based on years, use filter_years to get subset of data
-        base_group_str: the specified years.  Either a range or none
-        inp_list_of_groups: default is the sentencing departure ranges, can add other columns values to compare
-        plot: Choose type of plot based off of ('stacked bar', 'bar', 'pie')
+    Parameters
+    ----------
+    stateobj : State
+        the state who's data is being analyzed.  We need attributes of the state for plotting.
+    subset_dat : pandas DataFrame
+        data filtered for a certain set of years (could just be all the state data).
+    base_group_str : string
+        the name of the base group we are analyzing, 
+        usually this is just the state name, but if you filtered for a specific county
+        it might be advisible to make this the name of that group.
+    inp_list_of_groups : list, optional
+        factors / paths we want to group by for this analysis.. The default is ['departure'].
+    plot : string, optional
+        specifies plot type.  Can be 'bar', 'stacked bar', or 'pie'. The default is 'stacked bar'.
 
-    Returns:
-        Plots of subset of specified data (race, gender) based on the type of plot given in the input parameters
-    '''
+    Returns
+    -------
+    comb_df : pandas DataFrame
+        pandas dataframe contianing the counts and percents to represent the sentencing for each subgroup.
+
+    """
+
     groups_to_filter_by = []  # this list keeps track of the column names in our stateobj.data we are grouping by
     # get the column names in our stateobj.data we are grouping by
     for group in inp_list_of_groups:

@@ -3,7 +3,7 @@
 """
 Created on Mon Feb 27 14:19:24 2023
 
-@author: jason, alexis
+@author: MSU QSIDE JUSTFAIR 2023 Team
 """
 import pandas as pd
 import numpy as np

@@ -3,7 +3,7 @@
 """
 Created on Mon Feb 27 22:57:19 2023
 
-@author: jason
+@author: MSU QSIDE JUSTFAIR 2023 Team
 """
 
 import pandas as pd
