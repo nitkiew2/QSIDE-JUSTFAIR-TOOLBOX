@@ -50,7 +50,7 @@ The state toolbox currently does not have a function that can compare with the d
 The ACS.py module is designed to extract relevant American Community Survey (ACS) data from the census database for counties in a state. This module retrieves demographic data based on the years for which the survey has data available. Currently, the available years of data range from 2011-2021, but data for 2020 is missing. For each year, the module retrieves three key demographic data points: race, age, and sex. When the Demographic class object is called with a state and year specified, the data is automatically stored in a dictionary. The dictionary contains three Pandas data frames, each representing one of the demographic aspects. The data frames are divided into counties, allowing for analysis of specific regions within a state. 
 
 ## Flow of Information
-![flowOfInformation.png](attachment:flowOfInformation.png)
+![flowOfInformation.png](images/flowOfInformation.png)
 
 # Results
 Overall, the outcomes of the python package toolbox project were quite successful in its efforts of data sorting and visualization.  While the total amount of available tools is somewhat small, the underlying foundation they are built on is very strong.  Through the use of paths making data flexible and the subsequent writing of functions based off of the paths, the final tools are very robust.  They will work with any number of paths, provided they exist, and the functions will work on any subset of the state’s data.  Secondly, for the Compare section to larger group, it can work for any two groups, provided the first group is a subset of the second.  
@@ -59,21 +59,21 @@ Overall, the outcomes of the python package toolbox project were quite successfu
 ## State Trends
 The State Trends function is a small, easy to use function to analyze the current sentencing pattern of a state.  All this does is use the state’s *years* and *yearly_average_percents* to create a quick line plot showing how the state’s sentencing departures have changed with time.  There is only one parameter, compressed, which dictates if the lines are plotted together or separately.
 
-![stateTrends.png](attachment:stateTrends.png)
+![stateTrends.png](images/stateTrends.png)
 
 ## Generalizable Multi Level Summary / Subset Data Multi Level Summary
 Generalizable Multi Level Summary is a nice function to get summary statistics for each combination of a group of paths provided as input.  More specifically, Generalizable Multi Level Summary filters the state data for a set of years and then calls the helper function Subset Data Multi Level Summary.  The reason for this split is so Subset Data Multi Level Summary can be used by other functions in addition to Generalizable Multi Level Summary.
 
 Subset Data Multi Level Summary does the analysis and using the ‘*inp_list_of_groups*’ parameter passed into the function, provides the sentencing breakdown for the inner join of those groups’ values.  For example, if the groups were ‘*race*’ and ‘*sex*’, some example values of the inner join might be ‘*white female*’, or ‘*Asian male*’.  From there, for each value in that inner join, the sentencing breakdown is obtained.  This breakdown is calculated by getting the proportion of each sentencing type for that group, spanning all years queried. The output will produce a data table showing numeric values as well as a data visualization plot whose plot type is specified by the parameter ‘*plot*’. There are three plot types that the user can create a visualization of (stacked bar graph, bar graph, and pie chart). These plot types display the same information and can be changed efficiently by rerunning the function with one of the following plot names: ‘*stacked bar*’, ‘*bar*’, or ‘*pie*’. The plot title changes based off the name of the state object (ex: ‘Minnesota’).  The graphs provide a comparative analysis of sentencing length for each column value that has been inner joined on. 
-![GMLS.png](attachment:GMLS.png)
+![GMLS.png](images/GMLS.png)
 
 ## Compare Section to Larger Group
 Compare section to larger group is a function that can take in two areas and compare them.  The first area is the section, and it must be a subset of the second area, the larger group.  For example, the first area could be a judge and the second area could be the county they operate in.  From there, this function performs two levels of analysis: as an aggregate and then by year.  First, the function finds when the section and the larger group have overlapping data and filters both groups to only contain the years where both groups have data.  After that, the ***subset_data_multi_level_summary*** function is called to get the counts and percentages for all combinations of the *inp_list_of_groups*.  Then, it looks at the sentencing breakdown of each combination and compares the sentencing rates for the section and larger group, printing if the section rate is above (\> 105%), below (<95%) or just about at (95%-105%) the larger section’s sentencing rate.  After that, the function filters the data for year-by-year analysis, storing the values and creating plots of the sentencing trends over time.  Finally, it creates the plots and returns the data used to make them in case the user wants to investigate the results more. 
 ##### Text Output:
-![CSLG_Text-2.png](attachment:CSLG_Text-2.png)
+![CSLG_Text-2.png](images/CSLG_Text.png)
 
 ##### Graph Output:
-![CSLG_graph.png](attachment:CSLG_graph.png)
+![CSLG_graph.png](images/CSLG_graph.png)
 
 # Future Work
 Over the course of working for QSIDE JUSTFAIR, the team has created a Python package that allows for the sorting and visualization of data. There are limitations to the toolbox due to the technical knowledge prerequisite. The user must have knowledge of Python dictionaries and class object inheritance to understand how to set up the toolbox. There are documentation code examples for the user to assist them, however, there are further steps that can be taken to make the program more intuitive to the inexperienced user.  To extend the usefulness of the toolbox, three roadmaps have been created: one to expand the toolbox’s functionality, one to enhance user experience, and one to acquire more data.  Through these three roadmaps the toolbox can be easily expanded.
