@@ -1,7 +1,7 @@
 <h1 style="text-align: center;">QSIDE-JUSTFAIR TOOLBOX</h1>
 <h5 style="text-align: center;">By Mary Andrews, Alexis Morse, Jason Nitkiewicz, and Kevin Su</h5>
 
-![logo.png](attachment:logo.png)
+![logo.png](images/logo.png)
 
 # Abstract
 QSIDE JUSTFAIR is an established data justice and equity organization that has partnered with Michigan State University’s Computational Mathematics Science and Engineering (CMSE) Department to create a program that allows for the sorting and analysis of the United States District Court decision data. With the help of fellow data engineers, JUSTFAIR has been expanding its database with the hopes to transfer every state’s record of district judicial data into its database. Now that they are collecting data, they need a way to find significant trends that certify implicit or explicit bias in sentencing. Thus, JUSTFAIR_toolbox, a Python package consisting of object-oriented programming data storage and visualization techniques was created. This package can extract attributes of the data and call for multiple graph plots at the discretion of the user.  The package covers judicial information, as well as departure length analysis and state trend line graph observations. The versatility of functions allows for the package to have mutability when being faced with different data collection methods since every state stores the names of data attributes differently (i.e., sentencing length, race, age, gender, crime committed, judge name, district court name).  Enabling the data visualization of the District Court’s data will be able to identify bias and advance QSIDE JUSTFAIR’s goals to promote justice and equity for citizens under the American federal justice system. 
