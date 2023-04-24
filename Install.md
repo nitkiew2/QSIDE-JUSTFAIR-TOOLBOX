@@ -52,10 +52,7 @@ Create dictionary objects for states (object holding the data information per st
 
 #### 2. Accessing Census Data
 
-         DONT HAVE TO FILL THIS IN TILL WE KNOW IF WE ARE USING CENSUS DATA, WORKING ON UTILIZING CENPY PYTHON PACKAGE AS MEANS TO COLLECT CENSUS DATA FOR OBJECT
-
-
-
+ To call data from the ACS python file, you have to call the `demographic` class. This class is the main class object that can call data from different states. This class has data from 2010 to 2021. The database per state consists of age, race, and sex classification per case. The two parameter values to associate the object to are **'state name'** and **year of analysis**. For further clarification, see example code in the file ***____***.
 
 -------------------------------------------------------------------------------------------------------------
 
