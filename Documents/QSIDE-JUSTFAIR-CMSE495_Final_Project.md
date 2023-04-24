@@ -42,7 +42,7 @@ Overall, all of these Path objects are stored in a State object’s paths dictio
 Let’s look at Minnesota’s data for an example.  Minnesota stores its departure data in a column named ‘durdep’.  Values in the durdep column are 0,1,2,3, but the state’s data dictionary tells us that those values actually mean ‘within range’, ‘above departure’, ‘below range’, and ‘missing, indeterminable, or inapplicable’.  To set up the path for this object, one could use code similar to the example below.  Please see the package testing notebook for an in-depth example.
 
 
-![paths-5.png](attachment:paths-5.png)
+![paths.png](images/paths.png)
 
 ### Class ACS
 The state toolbox currently does not have a function that can compare with the demographic it represents. To address this problem, the team decided to create a prototype implementation of a feature by developing a class object. This class object provides quick access to the demographic data in the form of a Pandas data frame, making it easy to use and flexible. Although this class object is just a band aid solution for now, it serves as a starting point that future users and developers of the toolbox can build upon and enhance in the future. 
@@ -50,7 +50,6 @@ The state toolbox currently does not have a function that can compare with the d
 The ACS.py module is designed to extract relevant American Community Survey (ACS) data from the census database for counties in a state. This module retrieves demographic data based on the years for which the survey has data available. Currently, the available years of data range from 2011-2021, but data for 2020 is missing. For each year, the module retrieves three key demographic data points: race, age, and sex. When the Demographic class object is called with a state and year specified, the data is automatically stored in a dictionary. The dictionary contains three Pandas data frames, each representing one of the demographic aspects. The data frames are divided into counties, allowing for analysis of specific regions within a state. 
 
 ## Flow of Information
-
 ![flowOfInformation.png](attachment:flowOfInformation.png)
 
 # Results
