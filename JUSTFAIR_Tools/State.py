@@ -99,6 +99,23 @@ class State:
                 percentages.append(round((100 * counts.loc[item]  /  subset_dat.shape[0]),2))  # calcualte percents
             self.yearly_average_percents[year] = percentages  # add the value to the dictionary
 
+    def save():
+        """
+        Saves a state's profile to a file.  Probably a .json
+
+        Returns
+        -------
+        .json file.
+        """
+        
+    def load():
+        """
+        Loads a state's profile from a file.  Probably a .json
+
+        Returns
+        -------
+        None.
+        """
 
 ### List Paths
     def list_paths(self):
@@ -152,6 +169,29 @@ class State:
         # we should have a subplots vs stacked parameter here maybe?  either do lots of individual graphs or stacked
         subset_dat = filter_years(self, years)  #first, filter for the years we are looking for
         return subset_data_multi_level_summary(self, subset_dat, self.name, inp_list_of_groups, plot)
+    
+    
+ ### Generalizable Multi-Level Summary   
+    
+    def specific_subset_summary(self, tuples_to_filter_by_list, inp_list_of_groups = ['departure'], plot = 'stacked bar'):
+        """
+        Filters the state's data for a specific subset and then calls subset_data_multi_level_summary on it
+        Parameters
+        ----------
+        tuples_to_filter_by_list : list
+            list of tuples to filter by.  in the form of (path_name, [values to filter for]).
+        inp_list_of_groups : list, optional
+            the list of groups to group by.  Remember, keep the last values as 'departure', but you can add values from your paths object before it.. The default is ['departure'].
+        plot : string, optional
+            specifys the plot type.  If not 'bar', 'stacked bar', or 'pie', will not plot.  reccomend entering None if not plotting. The default is 'stacked bar'.
+
+        Returns
+        -------
+        Pandas DataFrame
+            returns a DataFrame that has allthe counts and percentages associated with the charts. 
+
+        """
+        pass
 
 
 
@@ -321,4 +361,7 @@ class State:
                                             'state', self.name,
                                             inp_list_of_groups, years, plot)
 
-        
+### compare a county's sentencing to its census data
+    def compare_county_to_census():
+        pass
+    
